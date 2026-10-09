@@ -42,24 +42,30 @@
         // （跟 index.html 里的一模一样）
         // ==========================================
         const firebaseConfig = {
-  apiKey: "AIzaSyC5Y0v7QfeFUHvPffNqrulq046j3eQi1R8",
-  authDomain: "sistem-pemilihan-kokurikulum.firebaseapp.com",
-  projectId: "sistem-pemilihan-kokurikulum",
-  storageBucket: "sistem-pemilihan-kokurikulum.firebasestorage.app",
-  messagingSenderId: "366107610148",
-  appId: "1:366107610148:web:b1cc4ed93b94b355865cb1",
-  measurementId: "G-14TF5JSHB2"
-};
+          apiKey: "AIzaSyC5Y0v7QfeFUHvPffNqrulq046j3eQi1R8",
+          authDomain: "sistem-pemilihan-kokurikulum.firebaseapp.com",
+          projectId: "sistem-pemilihan-kokurikulum",
+          storageBucket: "sistem-pemilihan-kokurikulum.firebasestorage.app",
+          messagingSenderId: "366107610148",
+          appId: "1:366107610148:web:b1cc4ed93b94b355865cb1",
+          measurementId: "G-14TF5JSHB2"
+        };
         // ==========================================
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // 社团代号转换表 (方便导出时显示中文名字，而不是 u1, s1)
+        // 社团代号转换表 (更新为启文小学的真实社团列表)
         const clubNames = {
-            'u1': '童军', 'u2': '红新月会', 'u3': '少年警察', 'u4': '圣约翰救伤队',
-            's1': '科学与数学学会', 's2': '电脑学会', 's3': '美术学会', 's4': '华文学会',
-            'sp1': '篮球学会', 'sp2': '羽毛球学会', 'sp3': '足球学会', 'sp4': '田径学会'
+            'u1': '少年消拯队', 'u2': '红新月会', 'u3': '童子军', 'u4': '伊斯兰童子军', 'u5': '少年军旅',
+            
+            's1': '华文学会', 's2': '国文学会', 's3': '英文学会', 's4': '小医生学会', 's5': '爪夷文学会',
+            's6': '书法学会', 's7': '美化校园学会', 's8': '创意艺术学会', 's9': '辅导学会', 's10': '资源回收学会',
+            's11': '阅读/咨询学会', 's12': '防罪犯学会', 's13': '机械学会', 's14': '国家原则学会', 's15': '贷书学会', 's16': 'STEM学会',
+            
+            'sp1': '游泳/越野赛跑', 'sp2': '羽球', 'sp3': '手球', 'sp4': '英式篮球', 'sp5': '篮球',
+            'sp6': '足球', 'sp7': '藤球', 'sp8': '排球', 'sp9': '象棋', 'sp10': '高尔夫球',
+            'sp11': '曲棍球', 'sp12': '跳绳', 'sp13': '田径', 'sp14': '乒乓'
         };
 
         const btnExport = document.getElementById('btn-export');
