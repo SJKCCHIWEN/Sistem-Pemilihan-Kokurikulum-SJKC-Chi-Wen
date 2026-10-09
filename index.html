@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>学校课外活动 / Pemilihan Kokurikulum</title>
+    <title>纳闽启文小学课外活动 / Pemilihan Kokurikulum SJKC CHI WEN</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -66,7 +66,7 @@
             <div class="flex justify-between items-center h-16">
                 <div class="flex-shrink-0 flex items-center gap-2">
                     <div class="w-8 h-8 rounded-lg bg-brand-600 text-white flex items-center justify-center">
-                        <i class="fa-solid fa-graduation-cap"></i>
+                        <i class="fa-solid fa-school"></i>
                     </div>
                     <div class="flex flex-col">
                         <span class="font-bold text-xl text-gray-900 leading-tight">学校课外活动</span>
@@ -90,30 +90,28 @@
                 <div class="w-16 h-16 bg-brand-100 text-brand-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
                     <i class="fa-solid fa-user-shield"></i>
                 </div>
-                <h1 class="text-2xl font-bold text-gray-900" id="login-header-title" data-i18n="loginTitle">家长登录</h1>
-                <p class="text-gray-500 mt-2 text-sm" id="login-header-desc" data-i18n="loginSub">请使用 Google 账号登录以继续</p>
+                <h1 class="text-2xl font-bold text-gray-900 leading-tight" id="login-header-title"></h1>
+                <p class="text-gray-500 mt-2 text-sm" id="login-header-desc"></p>
             </div>
 
-            <!-- Google Auth Section -->
             <div id="auth-section" class="flex flex-col items-center">
                 <button id="btn-google-login" type="button" class="w-full py-3 px-4 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-xl font-bold shadow-sm transition-all flex items-center justify-center gap-3">
                     <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5 h-5" alt="Google">
-                    <span data-i18n="googleLogin">使用 Google 账号登录</span>
+                    <span id="google-login-text"></span>
                 </button>
             </div>
 
-            <!-- Student Info Section -->
             <form id="student-form" class="space-y-5 hidden fade-in">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="studentName">学生姓名 / Nama Pelajar</label>
-                    <input type="text" id="input-student-name" required class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors" placeholder="e.g. Ali bin Abu">
+                    <label class="block text-sm font-medium text-gray-700 mb-1" id="label-student-name"></label>
+                    <input type="text" id="input-student-name" required class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors" placeholder="例如 / Cth: Ali bin Abu">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="studentClass">班级 / Kelas</label>
-                    <input type="text" id="input-student-class" required class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors" placeholder="e.g. 1A">
+                    <label class="block text-sm font-medium text-gray-700 mb-1" id="label-student-class"></label>
+                    <input type="text" id="input-student-class" required class="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors" placeholder="例如 / Cth: 1A">
                 </div>
                 <button type="submit" class="w-full py-3 px-4 bg-brand-600 hover:bg-brand-700 text-white rounded-xl font-bold shadow-md shadow-brand-500/20 transition-all flex items-center justify-center gap-2 mt-4">
-                    <span data-i18n="loginBtn">开始选课 / Mula Pemilihan</span>
+                    <span id="label-login-btn">开始选课 / Mula Pemilihan</span>
                     <i class="fa-solid fa-arrow-right"></i>
                 </button>
             </form>
@@ -128,26 +126,26 @@
                     
                     <div class="relative z-10 flex flex-col items-center step-item" data-step="1">
                         <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm bg-brand-600 text-white ring-4 ring-white shadow-sm transition-colors" id="step-circle-1">1</div>
-                        <span class="text-xs font-medium mt-2 text-brand-700" id="step-label-1" data-i18n="step1Title">制服团体</span>
+                        <span class="text-xs font-medium mt-2 text-brand-700 text-center" id="step-label-1">制服团体<br><span class="text-[9px] text-gray-400 font-normal">Badan Beruniform</span></span>
                     </div>
                     <div class="relative z-10 flex flex-col items-center step-item" data-step="2">
                         <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm bg-gray-200 text-gray-500 ring-4 ring-white shadow-sm transition-colors" id="step-circle-2">2</div>
-                        <span class="text-xs font-medium mt-2 text-gray-500" id="step-label-2" data-i18n="step2Title">学会</span>
+                        <span class="text-xs font-medium mt-2 text-gray-500 text-center" id="step-label-2">学会<br><span class="text-[9px] text-gray-400 font-normal">Kelab & Persatuan</span></span>
                     </div>
                     <div class="relative z-10 flex flex-col items-center step-item" data-step="3">
                         <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm bg-gray-200 text-gray-500 ring-4 ring-white shadow-sm transition-colors" id="step-circle-3">3</div>
-                        <span class="text-xs font-medium mt-2 text-gray-500" id="step-label-3" data-i18n="step3Title">运动与游戏</span>
+                        <span class="text-xs font-medium mt-2 text-gray-500 text-center" id="step-label-3">运动与游戏<br><span class="text-[9px] text-gray-400 font-normal">Sukan & Permainan</span></span>
                     </div>
                     <div class="relative z-10 flex flex-col items-center step-item" data-step="4">
                         <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm bg-gray-200 text-gray-500 ring-4 ring-white shadow-sm transition-colors" id="step-circle-4"><i class="fa-solid fa-check"></i></div>
-                        <span class="text-xs font-medium mt-2 text-gray-500" id="step-label-4" data-i18n="step4Title">确认</span>
+                        <span class="text-xs font-medium mt-2 text-gray-500 text-center" id="step-label-4">确认<br><span class="text-[9px] text-gray-400 font-normal">Pengesahan</span></span>
                     </div>
                 </div>
             </div>
 
             <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 mb-6 min-h-[400px] flex flex-col">
                 <div class="mb-6 border-b border-gray-100 pb-4">
-                    <h2 class="text-2xl font-bold text-gray-900" id="wizard-step-title">标题</h2>
+                    <h2 class="text-2xl font-bold text-gray-900 leading-tight" id="wizard-step-title">标题</h2>
                     <p class="text-gray-500 text-sm mt-1" id="wizard-step-desc">描述</p>
                 </div>
 
@@ -157,7 +155,7 @@
                     <div class="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-6 flex items-start gap-3">
                         <i class="fa-solid fa-circle-info text-blue-500 mt-0.5"></i>
                         <div>
-                            <p class="text-sm text-blue-900 font-medium" data-i18n="summaryMsg">请确认您的选择。提交后将无法更改。</p>
+                            <p class="text-sm text-blue-900 font-medium">请确认您的选择。提交后将无法更改。<br><span class="text-xs font-normal">Sila sahkan pilihan anda. Selepas dihantar, ia tidak boleh ditukar.</span></p>
                         </div>
                     </div>
                     <div class="space-y-4" id="summary-list"></div>
@@ -167,8 +165,8 @@
                     <div class="w-20 h-20 bg-green-100 text-green-500 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl shadow-sm">
                         <i class="fa-solid fa-check"></i>
                     </div>
-                    <h2 class="text-2xl font-bold text-gray-900 mb-2" data-i18n="successTitle">提交成功！</h2>
-                    <p class="text-gray-500 mb-6" data-i18n="successDesc">您的课外活动选择已成功保存。</p>
+                    <h2 class="text-2xl font-bold text-gray-900 mb-2">提交成功！<br>Berjaya Dihantar!</h2>
+                    <p class="text-gray-500 mb-6">您的课外活动选择已记录在案。<br>Pilihan kokurikulum anda telah direkodkan.</p>
 
                     <div class="bg-gray-50 rounded-xl p-6 w-full max-w-sm border border-gray-100 text-left mb-6" id="success-details">
                     </div>
@@ -178,11 +176,11 @@
             <!-- Navigation Buttons -->
             <div class="flex justify-between items-center" id="wizard-nav">
                 <button id="btn-prev" class="px-6 py-2.5 rounded-xl font-medium text-gray-600 bg-white border border-gray-300 hover:bg-gray-50 transition-colors hidden">
-                    <i class="fa-solid fa-arrow-left mr-2"></i> <span data-i18n="btnBack">返回</span>
+                    <i class="fa-solid fa-arrow-left mr-2"></i> <span>上一步 / Kembali</span>
                 </button>
                 <div class="flex-grow"></div>
                 <button id="btn-next" class="px-6 py-2.5 rounded-xl font-bold text-white bg-brand-600 hover:bg-brand-700 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
-                    <span id="btn-next-text" data-i18n="btnNext">下一步</span> <i class="fa-solid fa-arrow-right"></i>
+                    <span id="btn-next-text">下一步 / Seterusnya</span> <i class="fa-solid fa-arrow-right"></i>
                 </button>
             </div>
         </section>
@@ -192,10 +190,10 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // ==========================================
-        // Firebase Config
+        // ⚠️ 第 1 步：在这里填入您的 Firebase Config
         // ==========================================
         const firebaseConfig = {
           apiKey: "AIzaSyC5Y0v7QfeFUHvPffNqrulq046j3eQi1R8",
@@ -209,57 +207,78 @@
 
         const I18N = {
             zh: { 
-                appTitle: '学校课外活动',
                 loginTitle: '学生登录<br><span class="text-base text-gray-500 font-normal mt-1 block">Log Masuk Pelajar</span>', 
                 loginSub: '请使用学校提供的 Google Delima 账号登录<br>Sila log masuk dengan akaun Google Delima sekolah',
                 googleLogin: '<div class="text-center leading-tight">使用 Delima 账号登录<br><span class="text-[10px] font-normal opacity-70">Log Masuk dengan Delima</span></div>',
                 studentProfile: '填写学生资料<br><span class="text-base text-gray-500 font-normal mt-1 block">Profil Pelajar</span>', 
                 studentProfileSub: '请填写您孩子的资料以进行选课<br>Sila isi maklumat anak anda untuk pemilihan',
                 studentName: '学生姓名 / Nama Pelajar', 
-                studentClass: '班级 / Kelas (e.g. 1A)',
+                studentClass: '班级 / Kelas',
                 loginBtn: '开始选课 / Mula Pemilihan',
-                step1Title: '制服团体<br><span class="text-[10px] text-gray-400 font-normal">Badan Beruniform</span>', 
-                step2Title: '学会<br><span class="text-[10px] text-gray-400 font-normal">Kelab & Persatuan</span>', 
-                step3Title: '运动与游戏<br><span class="text-[10px] text-gray-400 font-normal">Sukan & Permainan</span>', 
-                step4Title: '确认<br><span class="text-[10px] text-gray-400 font-normal">Pengesahan</span>',
+                step1Title: '制服团体<br><span class="text-sm text-gray-500 font-normal">Badan Beruniform</span>', 
+                step2Title: '学会<br><span class="text-sm text-gray-500 font-normal">Kelab & Persatuan</span>', 
+                step3Title: '运动与游戏<br><span class="text-sm text-gray-500 font-normal">Sukan & Permainan</span>', 
+                step4Title: '确认<br><span class="text-sm text-gray-500 font-normal">Pengesahan</span>',
                 step1Desc: '请选择一个制服团体 (必选) / Sila pilih satu badan beruniform (Wajib)', 
                 step2Desc: '请选择一个学会 (必选) / Sila pilih satu kelab atau persatuan (Wajib)', 
                 step3Desc: '请选择一个运动或游戏 (必选) / Sila pilih satu sukan atau permainan (Wajib)',
                 summaryTitle: '确认选择 / Pengesahan Pilihan', 
-                summaryDesc: '请检查您为孩子选择的课外活动。 / Sila semak pilihan kokurikulum untuk anak anda.',
-                summaryMsg: '请确认您的选择。提交后，系统将保存该记录。<br>Sila sahkan pilihan anda. Selepas dihantar, ia akan direkodkan.',
+                summaryDesc: '请检查您的选择 / Sila semak pilihan anda.',
                 btnBack: '上一步 / Kembali', 
                 btnNext: '下一步 / Seterusnya', 
                 btnSubmit: '确认提交 / Hantar',
                 full: '已满 Penuh', 
                 slots: '名额 Kekosongan',
-                successTitle: '提交成功！<br>Berjaya Dihantar!', 
-                successDesc: '您的课外活动选择已记录在案。<br>Pilihan kokurikulum anda telah direkodkan.',
-            uniform: '制服团体 / Badan Beruniform', 
-            society: '学会 / Kelab & Persatuan', 
+                uniform: '制服团体 / Badan Beruniform', 
+                society: '学会 / Kelab & Persatuan', 
                 sports: '运动与游戏 / Sukan & Permainan'
             }
         };
 
         const CLUBS_DATA = [
-            { id: 'u1', category: 'uniform', name_zh: '童军', name_ms: 'Pengakap', desc_zh: '学习野外求生、步操与纪律。', desc_ms: 'Pelajari ikhtiar hidup, kawat dan disiplin.', capacity: 40, enrolled: 38, icon: 'fa-campground', color: 'text-amber-600 bg-amber-50 border-amber-200' },
-            { id: 'u2', category: 'uniform', name_zh: '红新月会', name_ms: 'Bulan Sabit Merah', desc_zh: '学习急救知识与人道救援精神。', desc_ms: 'Pelajari asas pertolongan cemas dan semangat kemanusiaan.', capacity: 40, enrolled: 40, icon: 'fa-truck-medical', color: 'text-red-600 bg-red-50 border-red-200' },
-            { id: 'u3', category: 'uniform', name_zh: '少年警察', name_ms: 'Kadet Polis', desc_zh: '培养领导能力与维护治安的意识。', desc_ms: 'Bina ciri kepimpinan dan kesedaran menjaga keamanan.', capacity: 35, enrolled: 20, icon: 'fa-shield-halved', color: 'text-blue-700 bg-blue-50 border-blue-200' },
-            { id: 'u4', category: 'uniform', name_zh: '圣约翰救伤队', name_ms: 'St. John Ambulans', desc_zh: '专业的急救与护理训练。', desc_ms: 'Latihan pertolongan cemas dan penjagaan profesional.', capacity: 30, enrolled: 15, icon: 'fa-suitcase-medical', color: 'text-gray-800 bg-gray-100 border-gray-300' },
+            // ================== 制服团体 (Pasukan Badan Beruniform) 5项 ==================
+            { id: 'u1', category: 'uniform', name_zh: '少年消拯队', name_ms: 'Bomba Junior', desc_zh: '', desc_ms: '', capacity: 40, enrolled: 0, icon: 'fa-fire-extinguisher', color: 'text-red-600 bg-red-50 border-red-200' },
+            { id: 'u2', category: 'uniform', name_zh: '红新月会', name_ms: 'Bulan Sabit Merah Malaysia', desc_zh: '', desc_ms: '', capacity: 40, enrolled: 0, icon: 'fa-truck-medical', color: 'text-rose-600 bg-rose-50 border-rose-200' },
+            { id: 'u3', category: 'uniform', name_zh: '童子军', name_ms: 'Pengakap', desc_zh: '', desc_ms: '', capacity: 40, enrolled: 0, icon: 'fa-campground', color: 'text-amber-600 bg-amber-50 border-amber-200' },
+            { id: 'u4', category: 'uniform', name_zh: '伊斯兰童子军', name_ms: 'Pergerakan Puteri Islam Malaysia', desc_zh: '', desc_ms: '', capacity: 40, enrolled: 0, icon: 'fa-star-and-crescent', color: 'text-emerald-600 bg-emerald-50 border-emerald-200' },
+            { id: 'u5', category: 'uniform', name_zh: '少年军旅', name_ms: 'Tunas Kadet Remaja Sekolah', desc_zh: '', desc_ms: '', capacity: 40, enrolled: 0, icon: 'fa-shield-halved', color: 'text-slate-600 bg-slate-50 border-slate-200' },
             
-            { id: 's1', category: 'society', name_zh: '科学与数学学会', name_ms: 'Persatuan Sains & Matematik', desc_zh: '探索有趣的科学实验与数学逻辑。', desc_ms: 'Terokai eksperimen sains dan logik matematik yang menarik.', capacity: 30, enrolled: 12, icon: 'fa-flask', color: 'text-indigo-600 bg-indigo-50 border-indigo-200' },
-            { id: 's2', category: 'society', name_zh: '电脑学会', name_ms: 'Kelab Komputer', desc_zh: '学习编程、网页设计与多媒体技能。', desc_ms: 'Pelajari pengaturcaraan, reka bentuk web & multimedia.', capacity: 25, enrolled: 25, icon: 'fa-laptop-code', color: 'text-cyan-600 bg-cyan-50 border-cyan-200' },
-            { id: 's3', category: 'society', name_zh: '美术学会', name_ms: 'Kelab Seni Lukis', desc_zh: '培养艺术天赋，学习各种绘画技巧。', desc_ms: 'Kembangkan bakat seni, pelajari pelbagai teknik lukisan.', capacity: 30, enrolled: 28, icon: 'fa-palette', color: 'text-pink-600 bg-pink-50 border-pink-200' },
-            { id: 's4', category: 'society', name_zh: '华文学会', name_ms: 'Persatuan Bahasa Cina', desc_zh: '传承中华文化，举办书法、辩论等活动。', desc_ms: 'Warisi budaya, anjur aktiviti kaligrafi dan perbahasan.', capacity: 50, enrolled: 30, icon: 'fa-book-open', color: 'text-red-700 bg-red-50 border-red-200' },
+            // ================== 学会 (Pesatuan Dan Kelab) 16项 ==================
+            { id: 's1', category: 'society', name_zh: '华文学会', name_ms: 'Bahasa Cina', desc_zh: '', desc_ms: '', capacity: 40, enrolled: 0, icon: 'fa-language', color: 'text-red-700 bg-red-50 border-red-200' },
+            { id: 's2', category: 'society', name_zh: '国文学会', name_ms: 'Bahasa Melayu', desc_zh: '', desc_ms: '', capacity: 40, enrolled: 0, icon: 'fa-book', color: 'text-blue-700 bg-blue-50 border-blue-200' },
+            { id: 's3', category: 'society', name_zh: '英文学会', name_ms: 'Bahasa Inggeris', desc_zh: '', desc_ms: '', capacity: 40, enrolled: 0, icon: 'fa-a', color: 'text-indigo-600 bg-indigo-50 border-indigo-200' },
+            { id: 's4', category: 'society', name_zh: '小医生学会', name_ms: 'Doktor Muda', desc_zh: '', desc_ms: '', capacity: 40, enrolled: 0, icon: 'fa-user-doctor', color: 'text-teal-600 bg-teal-50 border-teal-200' },
+            { id: 's5', category: 'society', name_zh: '爪夷文学会', name_ms: 'Jawi & Khat', desc_zh: '(仅限穆斯林学生)', desc_ms: '(Murid Muslim sahaja)', capacity: 40, enrolled: 0, icon: 'fa-pen-nib', color: 'text-emerald-700 bg-emerald-50 border-emerald-200' },
+            { id: 's6', category: 'society', name_zh: '书法学会', name_ms: 'Kaligrafi', desc_zh: '', desc_ms: '', capacity: 40, enrolled: 0, icon: 'fa-pen-fancy', color: 'text-gray-700 bg-gray-100 border-gray-300' },
+            { id: 's7', category: 'society', name_zh: '美化校园学会', name_ms: 'Keceriaan', desc_zh: '', desc_ms: '', capacity: 40, enrolled: 0, icon: 'fa-seedling', color: 'text-green-600 bg-green-50 border-green-200' },
+            { id: 's8', category: 'society', name_zh: '创意艺术学会', name_ms: 'Kakiseni Junior', desc_zh: '', desc_ms: '', capacity: 40, enrolled: 0, icon: 'fa-palette', color: 'text-pink-600 bg-pink-50 border-pink-200' },
+            { id: 's9', category: 'society', name_zh: '辅导学会', name_ms: 'Kerjaya', desc_zh: '(仅限辅导小尖兵)', desc_ms: '(PRS Sahaja)', capacity: 40, enrolled: 0, icon: 'fa-hands-holding-child', color: 'text-purple-600 bg-purple-50 border-purple-200' },
+            { id: 's10', category: 'society', name_zh: '资源回收学会', name_ms: 'Kitar Semula', desc_zh: '', desc_ms: '', capacity: 40, enrolled: 0, icon: 'fa-recycle', color: 'text-lime-600 bg-lime-50 border-lime-200' },
+            { id: 's11', category: 'society', name_zh: '阅读/咨询学会', name_ms: 'Nilam/TVPSS', desc_zh: '(仅限图书管理员)', desc_ms: '(Pengawas PSS Sahaja)', capacity: 40, enrolled: 0, icon: 'fa-book-open-reader', color: 'text-sky-600 bg-sky-50 border-sky-200' },
+            { id: 's12', category: 'society', name_zh: '防罪犯学会', name_ms: 'Pencegah Jenayah', desc_zh: '', desc_ms: '', capacity: 40, enrolled: 0, icon: 'fa-building-shield', color: 'text-slate-600 bg-slate-50 border-slate-200' },
+            { id: 's13', category: 'society', name_zh: '机械学会', name_ms: 'Robotik', desc_zh: '', desc_ms: '', capacity: 40, enrolled: 0, icon: 'fa-robot', color: 'text-zinc-600 bg-zinc-50 border-zinc-200' },
+            { id: 's14', category: 'society', name_zh: '国家原则学会', name_ms: 'Rukun Negara', desc_zh: '', desc_ms: '', capacity: 40, enrolled: 0, icon: 'fa-flag', color: 'text-yellow-600 bg-yellow-50 border-yellow-200' },
+            { id: 's15', category: 'society', name_zh: '贷书学会', name_ms: 'SPBT', desc_zh: '', desc_ms: '', capacity: 40, enrolled: 0, icon: 'fa-book-bookmark', color: 'text-orange-600 bg-orange-50 border-orange-200' },
+            { id: 's16', category: 'society', name_zh: '科学技术工程及数学学会', name_ms: 'STEM', desc_zh: '', desc_ms: '', capacity: 40, enrolled: 0, icon: 'fa-flask', color: 'text-cyan-600 bg-cyan-50 border-cyan-200' },
 
-            { id: 'sp1', category: 'sports', name_zh: '篮球学会', name_ms: 'Kelab Bola Keranjang', desc_zh: '提升篮球技巧，培养团队合作精神。', desc_ms: 'Tingkatkan kemahiran bola keranjang, pupuk kerjasama.', capacity: 40, enrolled: 35, icon: 'fa-basketball', color: 'text-orange-600 bg-orange-50 border-orange-200' },
-            { id: 'sp2', category: 'sports', name_zh: '羽毛球学会', name_ms: 'Kelab Badminton', desc_zh: '适合各阶段水平，提供专业指导。', desc_ms: 'Sesuai untuk semua tahap, bimbingan profesional disediakan.', capacity: 40, enrolled: 40, icon: 'fa-table-tennis-paddle-ball', color: 'text-teal-600 bg-teal-50 border-teal-200' },
-            { id: 'sp3', category: 'sports', name_zh: '足球学会', name_ms: 'Kelab Bola Sepak', desc_zh: '在绿茵场上挥洒汗水，锻炼体魄。', desc_ms: 'Bersenam dan tingkatkan kecergasan di padang hijau.', capacity: 50, enrolled: 22, icon: 'fa-futbol', color: 'text-green-600 bg-green-50 border-green-200' },
-            { id: 'sp4', category: 'sports', name_zh: '田径学会', name_ms: 'Kelab Olahraga', desc_zh: '发掘跑步与田赛潜能，代表学校参赛。', desc_ms: 'Cungkil potensi balapan & padang, wakili sekolah.', capacity: 45, enrolled: 15, icon: 'fa-person-running', color: 'text-yellow-600 bg-yellow-50 border-yellow-200' }
+            // ================== 体育与游戏 (Sukan Dan Permainan) 14项 ==================
+            { id: 'sp1', category: 'sports', name_zh: '游泳/越野赛跑', name_ms: 'Akuatik/Merentas Desa', desc_zh: '', desc_ms: '', capacity: 40, enrolled: 0, icon: 'fa-person-swimming', color: 'text-blue-600 bg-blue-50 border-blue-200' },
+            { id: 'sp2', category: 'sports', name_zh: '羽球', name_ms: 'Badminton', desc_zh: '', desc_ms: '', capacity: 40, enrolled: 0, icon: 'fa-table-tennis-paddle-ball', color: 'text-teal-600 bg-teal-50 border-teal-200' },
+            { id: 'sp3', category: 'sports', name_zh: '手球', name_ms: 'Bola Baling', desc_zh: '', desc_ms: '', capacity: 40, enrolled: 0, icon: 'fa-baseball', color: 'text-orange-600 bg-orange-50 border-orange-200' },
+            { id: 'sp4', category: 'sports', name_zh: '英式篮球', name_ms: 'Bola Jaring', desc_zh: '', desc_ms: '', capacity: 40, enrolled: 0, icon: 'fa-basketball', color: 'text-pink-600 bg-pink-50 border-pink-200' },
+            { id: 'sp5', category: 'sports', name_zh: '篮球', name_ms: 'Bola Keranjang', desc_zh: '', desc_ms: '', capacity: 40, enrolled: 0, icon: 'fa-basketball', color: 'text-orange-700 bg-orange-50 border-orange-200' },
+            { id: 'sp6', category: 'sports', name_zh: '足球', name_ms: 'Bola Sepak', desc_zh: '', desc_ms: '', capacity: 40, enrolled: 0, icon: 'fa-futbol', color: 'text-green-600 bg-green-50 border-green-200' },
+            { id: 'sp7', category: 'sports', name_zh: '藤球', name_ms: 'Bola Sepak Takraw', desc_zh: '', desc_ms: '', capacity: 40, enrolled: 0, icon: 'fa-circle-dot', color: 'text-amber-600 bg-amber-50 border-amber-200' },
+            { id: 'sp8', category: 'sports', name_zh: '排球', name_ms: 'Bola Tampar', desc_zh: '', desc_ms: '', capacity: 40, enrolled: 0, icon: 'fa-volleyball', color: 'text-blue-500 bg-blue-50 border-blue-200' },
+            { id: 'sp9', category: 'sports', name_zh: '象棋', name_ms: 'Catur', desc_zh: '', desc_ms: '', capacity: 40, enrolled: 0, icon: 'fa-chess-knight', color: 'text-slate-700 bg-slate-100 border-slate-300' },
+            { id: 'sp10', category: 'sports', name_zh: '高尔夫球', name_ms: 'Golf', desc_zh: '', desc_ms: '', capacity: 40, enrolled: 0, icon: 'fa-golf-ball-tee', color: 'text-emerald-600 bg-emerald-50 border-emerald-200' },
+            { id: 'sp11', category: 'sports', name_zh: '曲棍球', name_ms: 'Hoki', desc_zh: '', desc_ms: '', capacity: 40, enrolled: 0, icon: 'fa-hockey-puck', color: 'text-zinc-600 bg-zinc-50 border-zinc-200' },
+            { id: 'sp12', category: 'sports', name_zh: '跳绳', name_ms: 'Lompat Tali', desc_zh: '', desc_ms: '', capacity: 40, enrolled: 0, icon: 'fa-child-reaching', color: 'text-purple-600 bg-purple-50 border-purple-200' },
+            { id: 'sp13', category: 'sports', name_zh: '田径', name_ms: 'Olahraga', desc_zh: '', desc_ms: '', capacity: 40, enrolled: 0, icon: 'fa-person-running', color: 'text-red-600 bg-red-50 border-red-200' },
+            { id: 'sp14', category: 'sports', name_zh: '乒乓', name_ms: 'Pingpong', desc_zh: '', desc_ms: '', capacity: 40, enrolled: 0, icon: 'fa-table-tennis-paddle-ball', color: 'text-red-500 bg-red-50 border-red-200' }
         ];
 
         const STATE = {
-            lang: 'zh',
             step: 0,
             studentInfo: null,
             selections: { step1: null, step2: null, step3: null },
@@ -281,25 +300,23 @@
             wizardDesc: document.getElementById('wizard-step-desc'),
             clubsGrid: document.getElementById('clubs-grid'),
             summaryContainer: document.getElementById('summary-container'),
-        summaryList: document.getElementById('summary-list'),
-        successContainer: document.getElementById('success-container'),
-        wizardNav: document.getElementById('wizard-nav'),
-        btnPrev: document.getElementById('btn-prev'),
+            summaryList: document.getElementById('summary-list'),
+            successContainer: document.getElementById('success-container'),
+            wizardNav: document.getElementById('wizard-nav'),
+            btnPrev: document.getElementById('btn-prev'),
             btnNext: document.getElementById('btn-next'),
             btnNextText: document.getElementById('btn-next-text')
         };
 
         let db, auth, googleProvider;
-        const ALLOWED_DOMAINS = ['moe-dl.edu.my', 'gmail.com'];
+        const ALLOWED_DOMAINS = ['moe-dl.edu.my', 'gmail.com']; // 上线时可以把 gmail 删除
 
-        function updateTranslations() {
-            const strings = I18N['zh']; 
-            document.querySelectorAll('[data-i18n]').forEach(el => {
-                const key = el.getAttribute('data-i18n');
-                if (strings[key]) el.innerHTML = strings[key]; // 必须是 innerHTML，否则 <br> 不会生效
-            });
-            document.getElementById('input-student-name').placeholder = "例如 / Cth: Ali bin Abu";
-            document.getElementById('input-student-class').placeholder = "例如 / Cth: 1A";
+        function setupStaticText() {
+            const t = I18N.zh;
+            document.getElementById('google-login-text').innerHTML = t.googleLogin;
+            document.getElementById('label-student-name').innerHTML = t.studentName;
+            document.getElementById('label-student-class').innerHTML = t.studentClass;
+            document.getElementById('label-login-btn').innerHTML = t.loginBtn;
         }
 
         async function initFirebase() {
@@ -316,7 +333,7 @@
                         const isAllowed = ALLOWED_DOMAINS.some(domain => userEmail.endsWith('@' + domain));
                         
                         if (!isAllowed) {
-                            alert("登入拦截 🛑\n\n为了防止重复填写，系统仅允许使用学生专属的 Google Delima 账号 (@moe-dl.edu.my) 进行登入。\n请使用正确的账号重新登入。");
+                            alert("登入拦截 🛑\n\n为了防止重复填写，系统仅允许使用学生专属的 Google Delima 账号 (@moe-dl.edu.my) 进行登入。");
                             await signOut(auth); 
                             return; 
                         }
@@ -344,42 +361,46 @@
                 await signInWithPopup(auth, googleProvider);
             } catch (error) {
                 console.error("Google Login Error:", error);
-                const t = I18N['zh'];
-                
-                if (error.code === 'auth/unauthorized-domain') {
-                    const currentDomain = window.location.hostname || "当前预览沙盒";
-                    alert(`⚠️ 测试环境拦截 (auth/unauthorized-domain)\n\n由于当前运行环境 (${currentDomain}) 尚未加入 Firebase 白名单，Google 阻止了真实的登入。\n\n系统现已为您切换至【模拟测试模式】，让您可以继续体验选课流程！`);
-                    
+                if (error.code === 'auth/unauthorized-domain' || error.code === 'auth/operation-not-allowed') {
+                    alert(`⚠️ 登入被拦截 (${error.code})\n\n请确认您已经在 Firebase 后台加入了此网页的域名，并开启了 Google 登入功能。\n\n系统现为您切换至【模拟测试模式】。`);
                     STATE.userId = "demo-student-id";
                     STATE.parentEmail = "demo-student@moe-dl.edu.my";
                     DOM.btnLogout.classList.remove('hidden');
                     loadUserData();
                     return;
                 }
-
-                alert(`登录失败或已取消。\n错误信息: ${error.message}`);
-                DOM.btnGoogleLogin.innerHTML = `<img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5 h-5"><span data-i18n="googleLogin">${t.googleLogin}</span>`;
+                alert(`登录失败或已取消。`);
+                setupStaticText();
             }
         }
 
-        function showLoginView(requiresAuth) {
-            STATE.step = 0;
-            DOM.viewLogin.classList.remove('hidden');
-            DOM.viewWizard.classList.add('hidden');
-            
-            const t = I18N['zh'];
-            
-            if (requiresAuth) {
-                DOM.authSection.classList.remove('hidden');
-                DOM.studentForm.classList.add('hidden');
-                DOM.loginHeaderTitle.innerHTML = t.loginTitle;
-                DOM.loginHeaderDesc.innerHTML = t.loginSub;
-                DOM.btnGoogleLogin.innerHTML = `<img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5 h-5"><span data-i18n="googleLogin">${t.googleLogin}</span>`;
-            } else {
-                DOM.authSection.classList.add('hidden');
-                DOM.studentForm.classList.remove('hidden');
-                DOM.loginHeaderTitle.innerHTML = t.studentProfile;
-                DOM.loginHeaderDesc.innerHTML = t.studentProfileSub;
+        async function fetchClubCapacities() {
+            if (!db || STATE.userId === 'demo-student-id') return;
+            try {
+                console.log("正在从 Firebase 同步真实报名人数...");
+                const snapshot = await getDocs(collection(db, 'club_registrations'));
+                
+                // 初始化计数器
+                const counts = {};
+                CLUBS_DATA.forEach(c => counts[c.id] = 0);
+
+                // 统计每个社团被选择的次数
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    if (data.selections) {
+                        if (data.selections.step1) counts[data.selections.step1] = (counts[data.selections.step1] || 0) + 1;
+                        if (data.selections.step2) counts[data.selections.step2] = (counts[data.selections.step2] || 0) + 1;
+                        if (data.selections.step3) counts[data.selections.step3] = (counts[data.selections.step3] || 0) + 1;
+                    }
+                });
+
+                // 更新本地数据中的 enrolled 数量
+                CLUBS_DATA.forEach(c => {
+                    c.enrolled = counts[c.id] || 0;
+                });
+                console.log("人数同步完成！");
+            } catch (e) {
+                console.error("同步人数失败:", e);
             }
         }
 
@@ -407,12 +428,44 @@
             }
         }
 
-        function handleStudentSubmit(e) {
+        function showLoginView(requiresAuth) {
+            STATE.step = 0;
+            DOM.viewLogin.classList.remove('hidden');
+            DOM.viewWizard.classList.add('hidden');
+            
+            const t = I18N.zh;
+            
+            if (requiresAuth) {
+                DOM.authSection.classList.remove('hidden');
+                DOM.studentForm.classList.add('hidden');
+                DOM.loginHeaderTitle.innerHTML = t.loginTitle;
+                DOM.loginHeaderDesc.innerHTML = t.loginSub;
+                setupStaticText();
+            } else {
+                DOM.authSection.classList.add('hidden');
+                DOM.studentForm.classList.remove('hidden');
+                DOM.loginHeaderTitle.innerHTML = t.studentProfile;
+                DOM.loginHeaderDesc.innerHTML = t.studentProfileSub;
+            }
+        }
+
+        async function handleStudentSubmit(e) {
             e.preventDefault();
             const name = document.getElementById('input-student-name').value.trim();
             const cls = document.getElementById('input-student-class').value.trim();
             if (name && cls) {
                 STATE.studentInfo = { name, cls };
+                
+                // 重点：在进入选课页面前，瞬间算好所有社团的最新人数
+                const submitBtn = DOM.studentForm.querySelector('button[type="submit"]');
+                const originalContent = submitBtn.innerHTML;
+                submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> 正在读取最新名额...`;
+                submitBtn.disabled = true;
+
+                await fetchClubCapacities();
+
+                submitBtn.innerHTML = originalContent;
+                submitBtn.disabled = false;
                 showStep(1);
             }
         }
@@ -425,9 +478,7 @@
             STATE.selections = { step1: null, step2: null, step3: null };
             document.getElementById('student-form').reset();
             DOM.btnLogout.classList.add('hidden');
-            
-            const t = I18N['zh'];
-            DOM.btnGoogleLogin.innerHTML = `<img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5 h-5"><span data-i18n="googleLogin">${t.googleLogin}</span>`;
+            setupStaticText();
             showLoginView(true);
         }
 
@@ -459,21 +510,21 @@
                 if (i < STATE.step) {
                     circle.className = "w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm bg-brand-600 text-white ring-4 ring-white shadow-sm transition-colors";
                     circle.innerHTML = `<i class="fa-solid fa-check"></i>`;
-                    label.className = "text-xs font-medium mt-2 text-brand-700";
+                    label.classList.replace('text-gray-500', 'text-brand-700');
                 } else if (i === STATE.step) {
                     circle.className = "w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm bg-brand-600 text-white ring-4 ring-brand-100 shadow-sm transition-colors";
                     circle.innerHTML = i === 4 ? `<i class="fa-solid fa-check"></i>` : i;
-                    label.className = "text-xs font-medium mt-2 text-brand-700";
+                    label.classList.replace('text-gray-500', 'text-brand-700');
                 } else {
                     circle.className = "w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm bg-gray-200 text-gray-500 ring-4 ring-white shadow-sm transition-colors";
                     circle.innerHTML = i === 4 ? `<i class="fa-solid fa-check"></i>` : i;
-                    label.className = "text-xs font-medium mt-2 text-gray-500";
+                    label.classList.replace('text-brand-700', 'text-gray-500');
                 }
             }
         }
 
         function renderCurrentStep() {
-            const t = I18N['zh'];
+            const t = I18N.zh;
             
             DOM.clubsGrid.classList.add('hidden');
             DOM.summaryContainer.classList.add('hidden');
@@ -503,7 +554,7 @@
         }
 
         function renderClubsGrid() {
-            const t = I18N['zh'];
+            const t = I18N.zh;
             const categories = ['uniform', 'society', 'sports'];
             const currentCat = categories[STATE.step - 1];
             const stepKey = `step${STATE.step}`;
@@ -537,10 +588,11 @@
                                     <i class="fa-solid fa-check text-xs"></i>
                                 </div>
                             </div>
-                            <p class="text-xs text-gray-600 mt-2">${club.desc_zh}</p>
-                            <p class="text-[10px] text-gray-400 mb-3 italic">${club.desc_ms}</p>
                             
-                            <div class="inline-flex items-center px-2 py-1 rounded text-xs font-semibold ${isFull ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-gray-100 text-gray-600'}">
+                            ${club.desc_zh ? `<p class="text-xs text-gray-600 mt-2">${club.desc_zh}</p>` : ''}
+                            ${club.desc_ms ? `<p class="text-[10px] text-gray-400 mb-3 italic">${club.desc_ms}</p>` : ''}
+                            
+                            <div class="inline-flex items-center px-2 py-1 rounded text-xs font-semibold mt-2 ${isFull ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-gray-100 text-gray-600'}">
                                 <i class="fa-solid fa-user-group mr-1.5"></i>
                                 ${isFull ? t.full : `${club.enrolled}/${club.capacity} ${t.slots}`}
                             </div>
@@ -561,7 +613,7 @@
         }
 
         function renderSummary() {
-            const t = I18N['zh'];
+            const t = I18N.zh;
             DOM.summaryList.innerHTML = '';
             const cats = ['uniform', 'society', 'sports'];
             
@@ -591,29 +643,30 @@
         }
         
         function renderSuccess() {
-         const t = I18N['zh'];
-         const details = document.getElementById('success-details');
-         
-         details.innerHTML = `
-            <div class="flex justify-between py-2 border-b border-gray-200">
+            const t = I18N.zh;
+            const details = document.getElementById('success-details');
+            
+            details.innerHTML = `
+                <div class="flex justify-between py-2 border-b border-gray-200">
                     <span class="text-gray-500">${t.studentName}</span>
-                    <span class="font-medium text-gray-900">${STATE.studentInfo.name}</span>
+                    <span class="font-medium text-gray-900 uppercase">${STATE.studentInfo.name}</span>
                 </div>
                 <div class="flex justify-between py-2 mb-2 border-b border-gray-200">
-                    <span class="text-gray-500">Kelas / 班级</span>
-                    <span class="font-medium text-gray-900">${STATE.studentInfo.cls}</span>
+                    <span class="text-gray-500">${t.studentClass}</span>
+                    <span class="font-medium text-gray-900 uppercase">${STATE.studentInfo.cls}</span>
                 </div>
                 <div class="pt-2">
                     <span class="text-xs text-brand-600 font-bold tracking-wider uppercase mb-2 block">Selections / 已选</span>
                     ${[1,2,3].map(i => {
                         const club = CLUBS_DATA.find(c => c.id === STATE.selections[`step${i}`]);
-                        return `<div class="text-sm font-medium text-gray-800 py-1.5 flex items-start gap-2 border-b border-gray-100 last:border-0"><i class="fa-solid fa-check text-green-500 text-xs mt-1"></i> <div><div>${club ? club.name_zh : ''}</div><div class="text-xs text-gray-500">${club ? club.name_ms : ''}</div></div></div>`;
+                        return `<div class="text-sm font-medium text-gray-800 py-2 flex items-start gap-2 border-b border-gray-100 last:border-0"><i class="fa-solid fa-check text-green-500 text-xs mt-1"></i> <div><div>${club ? club.name_zh : ''}</div><div class="text-xs text-gray-500">${club ? club.name_ms : ''}</div></div></div>`;
                     }).join('')}
                 </div>
-             `;
+            `;
         }
 
         async function submitData() {
+            const t = I18N.zh;
             DOM.btnNext.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i>`;
             DOM.btnNext.disabled = true;
             DOM.btnPrev.disabled = true;
@@ -628,17 +681,16 @@
                             studentInfo: STATE.studentInfo,
                             parentEmail: STATE.parentEmail,
                             selections: STATE.selections,
-                        submitted: true,
-                        timestamp: new Date().toISOString()
-                    });
+                            submitted: true,
+                            timestamp: new Date().toISOString()
+                        });
+                    }
                 }
-            }
-
-            showStep(5); 
-        } catch (err) {
-            console.error(err);
-                alert("Error saving data. Please try again.");
-                DOM.btnNext.innerHTML = `<span id="btn-next-text">确认提交 / Hantar</span> <i class="fa-solid fa-arrow-right"></i>`;
+                showStep(5); 
+            } catch (err) {
+                console.error(err);
+                alert("抱歉，保存数据时出错，请重试。\nRalat menyimpan data.");
+                DOM.btnNext.innerHTML = `<span id="btn-next-text">${t.btnSubmit}</span> <i class="fa-solid fa-arrow-right"></i>`;
                 DOM.btnNext.disabled = false;
                 DOM.btnPrev.disabled = false;
             }
@@ -661,7 +713,7 @@
         });
 
         window.addEventListener('DOMContentLoaded', () => {
-            updateTranslations();
+            setupStaticText();
             initFirebase();
         });
     </script>
