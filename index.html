@@ -253,7 +253,7 @@
             // ================== 制服团体 (Pasukan Badan Beruniform) 5项 ==================
             { id: 'u1', category: 'uniform', name_zh: '少年消拯队', name_ms: 'Bomba Junior', desc_zh: '', desc_ms: '', capacity: 40, icon: 'fa-fire-extinguisher', color: 'text-red-600 bg-red-50 border-red-200' },
             { id: 'u2', category: 'uniform', name_zh: '红新月会', name_ms: 'Bulan Sabit Merah Malaysia', desc_zh: '', desc_ms: '', capacity: 40, icon: 'fa-truck-medical', color: 'text-rose-600 bg-rose-50 border-rose-200' },
-            { id: 'u3', category: 'uniform', name_zh: '童子军', name_ms: 'Pengakap', desc_zh: '', desc_ms: '', capacity: 12, icon: 'fa-campground', color: 'text-amber-600 bg-amber-50 border-amber-200' },
+            { id: 'u3', category: 'uniform', name_zh: '童子军', name_ms: 'Pengakap', desc_zh: '', desc_ms: '', capacity: 40, icon: 'fa-campground', color: 'text-amber-600 bg-amber-50 border-amber-200' },
             { id: 'u4', category: 'uniform', name_zh: '伊斯兰童子军', name_ms: 'Pergerakan Puteri Islam Malaysia', desc_zh: '', desc_ms: '', capacity: 40, icon: 'fa-star-and-crescent', color: 'text-emerald-600 bg-emerald-50 border-emerald-200' },
             { id: 'u5', category: 'uniform', name_zh: '少年军旅', name_ms: 'Tunas Kadet Remaja Sekolah', desc_zh: '', desc_ms: '', capacity: 40, icon: 'fa-shield-halved', color: 'text-slate-600 bg-slate-50 border-slate-200' },
             
@@ -727,7 +727,7 @@
                         await setDoc(docRef, {
                             studentInfo: STATE.studentInfo,
                             parentEmail: STATE.parentEmail,
-                            selections: STATE.selections,
+                            selections: STATE.selections, // CRITICAL FIX: Save the entire selections object which contains IDs (e.g., 'u1', 's2')
                             submitted: true,
                             timestamp: new Date().toISOString()
                         });
