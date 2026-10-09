@@ -204,8 +204,8 @@
                 
                 const name = data.studentInfo?.name || '-';
                 const cls = data.studentInfo?.cls || '-';
-                
-                // 翻译社团名称
+                // 翻译社团名称 (CRITICAL FIX: Match the correct property from the database)
+                // The database stores IDs like 'u1' in selections.step1. We map these IDs back to names.
                 const uniform = clubNames[data.selections?.step1] || '<span class="text-red-400">未选</span>';
                 const society = clubNames[data.selections?.step2] || '<span class="text-red-400">未选</span>';
                 const sports = clubNames[data.selections?.step3] || '<span class="text-red-400">未选</span>';
