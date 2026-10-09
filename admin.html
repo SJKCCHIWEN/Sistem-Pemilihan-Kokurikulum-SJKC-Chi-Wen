@@ -3,43 +3,120 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>课外活动报名 - 数据导出后台</title>
+    <title>SJKC Chi Wen - 课外活动后台仪表盘 (Live Dashboard)</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
-        body { font-family: 'Inter', sans-serif; }
+        body { font-family: 'Inter', "楷体", "KaiTi", sans-serif; background-color: #f8fafc; }
+        /* 自定义滚动条 */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .fade-in { animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
-<body class="bg-gray-100 min-h-screen p-8">
+<body class="min-h-screen text-slate-800 p-4 sm:p-8">
 
-    <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-md p-8">
-        <div class="flex items-center justify-between mb-8 border-b pb-4">
+    <!-- 顶部标题与数据卡片 -->
+    <div class="max-w-7xl mx-auto mb-8 fade-in">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
             <div>
-                <h1 class="text-2xl font-bold text-gray-800"><i class="fa-solid fa-database text-blue-600 mr-2"></i> 数据导出后台</h1>
-                <p class="text-gray-500 mt-1">一键将 Firebase 里的学生报名数据导出为 Excel (CSV) 格式。</p>
+                <h1 class="text-3xl font-bold text-slate-900 flex items-center gap-3">
+                    <i class="fa-solid fa-chart-pie text-brand-600 text-teal-600"></i> 
+                    课外活动后台仪表盘
+                </h1>
+                <p class="text-slate-500 mt-2">Live Dashboard - 数据实时自动更新，无需刷新网页。</p>
             </div>
-            <button id="btn-export" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-xl shadow-sm transition-all flex items-center gap-2">
-                <i class="fa-solid fa-file-csv"></i> <span>下载 Excel (CSV) 报告</span>
-            </button>
+            
+            <div class="flex gap-3">
+                <div class="bg-white px-6 py-3 rounded-xl shadow-sm border border-slate-200 flex items-center gap-4">
+                    <div class="p-2 bg-teal-50 text-teal-600 rounded-lg"><i class="fa-solid fa-users text-xl"></i></div>
+                    <div>
+                        <p class="text-xs text-slate-500 font-bold uppercase tracking-wider">总报名人数</p>
+                        <p class="text-2xl font-bold text-slate-900 leading-none mt-1" id="total-count">0</p>
+                    </div>
+                </div>
+                
+                <button id="btn-export" class="bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-5 rounded-xl shadow-sm transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-file-csv"></i> <span class="hidden sm:inline">导出 Excel</span>
+                </button>
+            </div>
         </div>
 
-        <div id="status-box" class="bg-blue-50 text-blue-800 p-4 rounded-xl border border-blue-100 hidden">
-            <i class="fa-solid fa-spinner fa-spin mr-2"></i> 正在从数据库获取资料，请稍候...
+        <!-- 搜索与表格区域 -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+            
+            <!-- 工具栏 -->
+            <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                <div class="relative w-full max-w-sm">
+                    <i class="fa-solid fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400"></i>
+                    <input type="text" id="search-input" class="w-full pl-11 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all text-sm outline-none" placeholder="搜索学生姓名或班级 (如: 1A)...">
+                </div>
+                <div class="text-sm text-slate-500 flex items-center gap-2 hidden sm:flex">
+                    <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div> Live Sync Active
+                </div>
+            </div>
+
+            <!-- 数据表格 -->
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse whitespace-nowrap">
+                    <thead>
+                        <tr class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider font-bold border-b border-slate-200">
+                            <th class="p-4 pl-6">提交时间</th>
+                            <th class="p-4">班级</th>
+                            <th class="p-4">学生姓名</th>
+                            <th class="p-4">制服团体</th>
+                            <th class="p-4">学会</th>
+                            <th class="p-4">运动与游戏</th>
+                            <th class="p-4 pr-6 text-right">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body" class="divide-y divide-slate-100 text-sm">
+                        <!-- 数据将通过 JS 渲染在这里 -->
+                    </tbody>
+                </table>
+                
+                <!-- 骨架屏 / 加载中 -->
+                <div id="loading-state" class="p-12 text-center text-slate-400">
+                    <i class="fa-solid fa-spinner fa-spin text-3xl mb-3 text-teal-500"></i>
+                    <p>正在与 Firebase 建立实时连接...</p>
+                </div>
+
+                <!-- 无数据提示 -->
+                <div id="empty-state" class="hidden p-12 text-center text-slate-400">
+                    <i class="fa-solid fa-folder-open text-4xl mb-3 text-slate-300"></i>
+                    <p>暂无报名记录或找不到匹配的结果</p>
+                </div>
+            </div>
         </div>
-        
-        <div id="success-box" class="bg-green-50 text-green-800 p-4 rounded-xl border border-green-100 hidden">
-            <i class="fa-solid fa-check-circle mr-2"></i> 导出成功！文件已开始下载。
+    </div>
+
+    <!-- 自定义确认删除弹窗 (代替丑陋的 default confirm) -->
+    <div id="delete-modal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center fade-in p-4">
+        <div class="bg-white rounded-2xl shadow-xl max-w-sm w-full p-6 text-center">
+            <div class="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h3 class="text-xl font-bold text-slate-900 mb-2">确认删除此记录？</h3>
+            <p class="text-slate-500 text-sm mb-6" id="delete-modal-msg">删除后，该学生释放的社团名额将立即恢复给其他学生选择。此操作无法撤销。</p>
+            <div class="flex gap-3">
+                <button id="btn-cancel-delete" class="flex-1 py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold transition-colors">取消</button>
+                <button id="btn-confirm-delete" class="flex-1 py-2.5 px-4 bg-red-500 hover:bg-red-600 text-white rounded-xl font-bold transition-colors shadow-sm shadow-red-500/30">确认删除</button>
+            </div>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, onSnapshot, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // ==========================================
-        // ⚠️ 第 1 步：请把这里的 firebaseConfig 替换成您的真实 Config！
-        // （跟 index.html 里的一模一样）
+        // ⚠️ 第 1 步：请确保这里的 Config 和 index.html 一模一样
         // ==========================================
         const firebaseConfig = {
           apiKey: "AIzaSyC5Y0v7QfeFUHvPffNqrulq046j3eQi1R8",
@@ -47,84 +124,197 @@
           projectId: "sistem-pemilihan-kokurikulum",
           storageBucket: "sistem-pemilihan-kokurikulum.firebasestorage.app",
           messagingSenderId: "366107610148",
-          appId: "1:366107610148:web:b1cc4ed93b94b355865cb1",
-          measurementId: "G-14TF5JSHB2"
+          appId: "1:366107610148:web:b1cc4ed93b94b355865cb1"
         };
         // ==========================================
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // 社团代号转换表 (更新为启文小学的真实社团列表)
+        // 社团代号转换表 (与之前一致)
         const clubNames = {
             'u1': '少年消拯队', 'u2': '红新月会', 'u3': '童子军', 'u4': '伊斯兰童子军', 'u5': '少年军旅',
-            
             's1': '华文学会', 's2': '国文学会', 's3': '英文学会', 's4': '小医生学会', 's5': '爪夷文学会',
             's6': '书法学会', 's7': '美化校园学会', 's8': '创意艺术学会', 's9': '辅导学会', 's10': '资源回收学会',
-            's11': '阅读/咨询学会', 's12': '防罪犯学会', 's13': '机械学会', 's14': '国家原则学会', 's15': '贷书学会', 's16': 'STEM学会',
-            
+            's11': '阅读/咨询学会', 's12': '防罪犯学会', 's13': '机械学会', 's14': '国家原则学会', 's15': '贷书学会', 's16': 'STEM',
             'sp1': '游泳/越野赛跑', 'sp2': '羽球', 'sp3': '手球', 'sp4': '英式篮球', 'sp5': '篮球',
             'sp6': '足球', 'sp7': '藤球', 'sp8': '排球', 'sp9': '象棋', 'sp10': '高尔夫球',
             'sp11': '曲棍球', 'sp12': '跳绳', 'sp13': '田径', 'sp14': '乒乓'
         };
 
+        // 全局变量
+        let allRecords = [];
+        let recordToDelete = null;
+
+        // DOM 元素
+        const tbody = document.getElementById('table-body');
+        const loadingState = document.getElementById('loading-state');
+        const emptyState = document.getElementById('empty-state');
+        const countEl = document.getElementById('total-count');
+        const searchInput = document.getElementById('search-input');
         const btnExport = document.getElementById('btn-export');
-        const statusBox = document.getElementById('status-box');
-        const successBox = document.getElementById('success-box');
+        
+        // 弹窗元素
+        const modal = document.getElementById('delete-modal');
+        const modalMsg = document.getElementById('delete-modal-msg');
+        const btnCancelDelete = document.getElementById('btn-cancel-delete');
+        const btnConfirmDelete = document.getElementById('btn-confirm-delete');
 
-        btnExport.addEventListener('click', async () => {
-            try {
-                btnExport.disabled = true;
-                statusBox.classList.remove('hidden');
-                successBox.classList.add('hidden');
+        // ==========================================
+        // 核心功能 1：实时监听 Firebase 数据 (Live Sync)
+        // ==========================================
+        onSnapshot(collection(db, "club_registrations"), (snapshot) => {
+            allRecords = [];
+            snapshot.forEach((doc) => {
+                allRecords.push({ id: doc.id, ...doc.data() });
+            });
+            
+            // 按时间倒序排列 (最新的在最上面)
+            allRecords.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            
+            loadingState.classList.add('hidden');
+            renderTable(allRecords);
+        }, (error) => {
+            console.error("数据同步失败:", error);
+            loadingState.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-red-500 text-3xl mb-3"></i><p class="text-red-600">连接失败，请检查网络设定或权限设定。</p>`;
+        });
 
-                // 1. 从 Firestore 获取所有资料
-                const querySnapshot = await getDocs(collection(db, "club_registrations"));
+        // ==========================================
+        // 核心功能 2：渲染表格内容
+        // ==========================================
+        function renderTable(dataArray) {
+            tbody.innerHTML = '';
+            countEl.innerText = dataArray.length;
+
+            if (dataArray.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            dataArray.forEach((data) => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 transition-colors group";
                 
-                // 2. 准备 CSV 的表头 (Header)
-                // 加上 \uFEFF 是为了防止 Excel 打开中文时变乱码 (UTF-8 BOM)
-                let csvContent = "\uFEFF提交时间,家长电邮,学生姓名,班级,制服团体,学会,运动与游戏\n";
+                // 格式化时间
+                const dateObj = new Date(data.timestamp);
+                const timeStr = isNaN(dateObj) ? '未知' : 
+                    `${dateObj.getFullYear()}-${String(dateObj.getMonth()+1).padStart(2,'0')}-${String(dateObj.getDate()).padStart(2,'0')} <span class="text-slate-400 text-xs ml-1">${String(dateObj.getHours()).padStart(2,'0')}:${String(dateObj.getMinutes()).padStart(2,'0')}</span>`;
+                
+                const name = data.studentInfo?.name || '-';
+                const cls = data.studentInfo?.cls || '-';
+                
+                // 翻译社团名称
+                const uniform = clubNames[data.selections?.step1] || '<span class="text-red-400">未选</span>';
+                const society = clubNames[data.selections?.step2] || '<span class="text-red-400">未选</span>';
+                const sports = clubNames[data.selections?.step3] || '<span class="text-red-400">未选</span>';
 
-                // 3. 把每一行数据写入 CSV
-                querySnapshot.forEach((doc) => {
-                    const data = doc.data();
-                    
-                    const timestamp = data.timestamp ? new Date(data.timestamp).toLocaleString() : '未知时间';
-                    const email = data.parentEmail || '';
-                    const name = data.studentInfo?.name || '';
-                    const cls = data.studentInfo?.cls || '';
-                    
-                    // 将社团 ID 转换为中文名字
-                    const uniform = clubNames[data.selections?.step1] || data.selections?.step1 || '';
-                    const society = clubNames[data.selections?.step2] || data.selections?.step2 || '';
-                    const sports = clubNames[data.selections?.step3] || data.selections?.step3 || '';
+                tr.innerHTML = `
+                    <td class="p-4 pl-6">${timeStr}</td>
+                    <td class="p-4"><span class="bg-slate-100 text-slate-700 font-bold px-2 py-1 rounded text-xs">${cls}</span></td>
+                    <td class="p-4 font-bold text-slate-900">${name}</td>
+                    <td class="p-4"><span class="bg-red-50 text-red-700 px-2 py-1 rounded-md text-xs border border-red-100">${uniform}</span></td>
+                    <td class="p-4"><span class="bg-yellow-50 text-yellow-700 px-2 py-1 rounded-md text-xs border border-yellow-100">${society}</span></td>
+                    <td class="p-4"><span class="bg-blue-50 text-blue-700 px-2 py-1 rounded-md text-xs border border-blue-100">${sports}</span></td>
+                    <td class="p-4 pr-6 text-right">
+                        <button class="delete-btn opacity-20 group-hover:opacity-100 text-slate-400 hover:text-red-500 hover:bg-red-50 p-2 rounded-lg transition-all" data-id="${data.id}" data-name="${name}">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
 
-                    // 把字段用双引号包起来，防止内容里有逗号导致格式错乱
-                    const row = `"${timestamp}","${email}","${name}","${cls}","${uniform}","${society}","${sports}"`;
-                    csvContent += row + "\n";
+            // 绑定删除按钮事件
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    recordToDelete = this.getAttribute('data-id');
+                    const studentName = this.getAttribute('data-name');
+                    modalMsg.innerHTML = `确定要永久删除学生 <strong>${studentName}</strong> 的报名记录吗？<br>删除后，该学生所占用的社团名额将立即释放。`;
+                    modal.classList.remove('hidden');
                 });
+            });
+        }
 
-                // 4. 触发下载
-                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-                const url = URL.createObjectURL(blob);
-                const link = document.createElement("a");
-                link.setAttribute("href", url);
-                link.setAttribute("download", "课外活动报名总表.csv");
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
+        // ==========================================
+        // 核心功能 3：搜索功能
+        // ==========================================
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const filtered = allRecords.filter(record => {
+                const name = (record.studentInfo?.name || '').toLowerCase();
+                const cls = (record.studentInfo?.cls || '').toLowerCase();
+                return name.includes(searchTerm) || cls.includes(searchTerm);
+            });
+            renderTable(filtered);
+        });
 
-                statusBox.classList.add('hidden');
-                successBox.classList.remove('hidden');
-                btnExport.disabled = false;
+        // ==========================================
+        // 核心功能 4：确认删除操作
+        // ==========================================
+        btnCancelDelete.addEventListener('click', () => {
+            modal.classList.add('hidden');
+            recordToDelete = null;
+        });
 
+        btnConfirmDelete.addEventListener('click', async () => {
+            if (!recordToDelete) return;
+            
+            const originalText = btnConfirmDelete.innerHTML;
+            btnConfirmDelete.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> 删除中`;
+            btnConfirmDelete.disabled = true;
+
+            try {
+                // 执行删除命令到 Firebase
+                await deleteDoc(doc(db, "club_registrations", recordToDelete));
+                // 删除成功后，Firebase 的 onSnapshot 会自动触发更新表格，无需手动重绘
+                modal.classList.add('hidden');
             } catch (error) {
-                console.error("导出失败: ", error);
-                alert("导出失败，请检查网络或资料库连接。\n错误信息：" + error.message);
-                statusBox.classList.add('hidden');
-                btnExport.disabled = false;
+                console.error("删除失败", error);
+                alert("删除失败，请检查网络权限。");
+            } finally {
+                btnConfirmDelete.innerHTML = originalText;
+                btnConfirmDelete.disabled = false;
+                recordToDelete = null;
             }
         });
+
+        // ==========================================
+        // 核心功能 5：导出 CSV (基于当前筛选结果)
+        // ==========================================
+        btnExport.addEventListener('click', () => {
+            if (allRecords.length === 0) return;
+            
+            let csvContent = "\uFEFF提交时间,家长电邮,学生姓名,班级,制服团体,学会,运动与游戏\n";
+            
+            // 使用当前显示的数据（允许导出搜索筛选后的数据）
+            const currentData = searchInput.value.trim() !== '' ? 
+                allRecords.filter(r => (r.studentInfo?.name||'').toLowerCase().includes(searchInput.value.toLowerCase()) || (r.studentInfo?.cls||'').toLowerCase().includes(searchInput.value.toLowerCase())) 
+                : allRecords;
+
+            currentData.forEach(data => {
+                const timestamp = data.timestamp ? new Date(data.timestamp).toLocaleString() : '未知';
+                const email = data.parentEmail || '';
+                const name = data.studentInfo?.name || '';
+                const cls = data.studentInfo?.cls || '';
+                const uniform = clubNames[data.selections?.step1] || '';
+                const society = clubNames[data.selections?.step2] || '';
+                const sports = clubNames[data.selections?.step3] || '';
+
+                csvContent += `"${timestamp}","${email}","${name}","${cls}","${uniform}","${society}","${sports}"\n`;
+            });
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.setAttribute("href", url);
+            link.setAttribute("download", `启文小学课外活动_${new Date().toISOString().slice(0,10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+
     </script>
 </body>
 </html>
