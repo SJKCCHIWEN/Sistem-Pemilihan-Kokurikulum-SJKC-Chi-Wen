@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Club Selection Wizard</title>
+    <title>学校课外活动 / Pemilihan Kokurikulum</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
@@ -69,12 +69,13 @@
                     <div class="w-8 h-8 rounded-lg bg-brand-600 text-white flex items-center justify-center">
                         <i class="fa-solid fa-graduation-cap"></i>
                     </div>
-                    <span class="font-bold text-xl text-gray-900 tracking-tight" data-i18n="appTitle">学校课外活动</span>
+                    <div class="flex flex-col">
+                        <span class="font-bold text-xl text-gray-900 leading-tight">学校课外活动</span>
+                        <span class="text-xs text-brand-600 font-medium">Pemilihan Kokurikulum</span>
+                    </div>
                 </div>
                 
                 <div class="flex items-center gap-3">
-                    <div class="flex items-center bg-gray-100 rounded-full p-1 cursor-pointer select-none" id="lang-toggle-btn">
-                    </div>
                     <button id="btn-logout" class="hidden text-gray-500 hover:text-red-600 transition-colors ml-2" title="Logout">
                         <i class="fa-solid fa-right-from-bracket"></i>
                     </button>
@@ -102,7 +103,7 @@
                 </button>
             </div>
 
-            <!-- Student Info Section (Hidden initially) -->
+            <!-- Student Info Section -->
             <form id="student-form" class="space-y-5 hidden fade-in">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1" data-i18n="studentName">学生姓名 / Nama Pelajar</label>
@@ -123,12 +124,9 @@
             <!-- Stepper -->
             <div class="mb-8">
                 <div class="flex items-center justify-between relative">
-                    <!-- Progress Bar Background -->
                     <div class="absolute left-0 top-1/2 transform -translate-y-1/2 w-full h-1 bg-gray-200 z-0"></div>
-                    <!-- Active Progress Bar -->
                     <div id="stepper-progress" class="absolute left-0 top-1/2 transform -translate-y-1/2 h-1 bg-brand-500 z-0 transition-all duration-500 w-0"></div>
                     
-                    <!-- Steps -->
                     <div class="relative z-10 flex flex-col items-center step-item" data-step="1">
                         <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm bg-brand-600 text-white ring-4 ring-white shadow-sm transition-colors" id="step-circle-1">1</div>
                         <span class="text-xs font-medium mt-2 text-brand-700" id="step-label-1" data-i18n="step1Title">制服团体</span>
@@ -148,19 +146,14 @@
                 </div>
             </div>
 
-            <!-- Main Content Area -->
             <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 mb-6 min-h-[400px] flex flex-col">
                 <div class="mb-6 border-b border-gray-100 pb-4">
                     <h2 class="text-2xl font-bold text-gray-900" id="wizard-step-title">标题</h2>
                     <p class="text-gray-500 text-sm mt-1" id="wizard-step-desc">描述</p>
                 </div>
 
-                <!-- Grid for Step 1-3 -->
-                <div id="clubs-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-4 flex-grow content-start">
-                    <!-- Cards injected here -->
-                </div>
+                <div id="clubs-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-4 flex-grow content-start"></div>
 
-                <!-- Summary Container for Step 4 -->
                 <div id="summary-container" class="hidden flex-grow flex flex-col">
                     <div class="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-6 flex items-start gap-3">
                         <i class="fa-solid fa-circle-info text-blue-500 mt-0.5"></i>
@@ -168,13 +161,9 @@
                             <p class="text-sm text-blue-900 font-medium" data-i18n="summaryMsg">请确认您的选择。提交后将无法更改。</p>
                         </div>
                     </div>
-                    
-                    <div class="space-y-4" id="summary-list">
-                        <!-- Summary items injected here -->
-                    </div>
+                    <div class="space-y-4" id="summary-list"></div>
                 </div>
                 
-                <!-- Success State Container -->
                 <div id="success-container" class="hidden flex-grow flex-col items-center justify-center py-10 text-center fade-in">
                     <div class="w-20 h-20 bg-green-100 text-green-500 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl shadow-sm">
                         <i class="fa-solid fa-check"></i>
@@ -191,10 +180,8 @@
                     </div>
 
                     <div class="bg-gray-50 rounded-xl p-6 w-full max-w-sm border border-gray-100 text-left mb-6" id="success-details">
-                        <!-- details -->
                     </div>
                 </div>
-
             </div>
 
             <!-- Navigation Buttons -->
@@ -217,101 +204,88 @@
         import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // ==========================================
-        // ⚠️ 第 1 步：在这里填入您的 Firebase Config
+        // Firebase Config
         // ==========================================
         const firebaseConfig = {
-  apiKey: "AIzaSyC5Y0v7QfeFUHvPffNqrulq046j3eQi1R8",
-  authDomain: "sistem-pemilihan-kokurikulum.firebaseapp.com",
-  projectId: "sistem-pemilihan-kokurikulum",
-  storageBucket: "sistem-pemilihan-kokurikulum.firebasestorage.app",
-  messagingSenderId: "366107610148",
-  appId: "1:366107610148:web:b1cc4ed93b94b355865cb1",
-  measurementId: "G-14TF5JSHB2"
-};
-        // ==========================================
+          apiKey: "AIzaSyC5Y0v7QfeFUHvPffNqrulq046j3eQi1R8",
+          authDomain: "sistem-pemilihan-kokurikulum.firebaseapp.com",
+          projectId: "sistem-pemilihan-kokurikulum",
+          storageBucket: "sistem-pemilihan-kokurikulum.firebasestorage.app",
+          messagingSenderId: "366107610148",
+          appId: "1:366107610148:web:b1cc4ed93b94b355865cb1",
+          measurementId: "G-14TF5JSHB2"
+        };
 
         const I18N = {
-zh: { 
-        appTitle: '学校课外活动',
-        loginTitle: '学生登录<br><span class="text-base text-gray-500 font-normal mt-1 block">Log Masuk Pelajar</span>', 
-        loginSub: '请使用学校提供的 Google Delima 账号登录<br>Sila log masuk dengan akaun Google Delima sekolah',
-        googleLogin: '<div class="text-center leading-tight">使用 Delima 账号登录<br><span class="text-[10px] font-normal opacity-70">Log Masuk dengan Delima</span></div>',
-        studentProfile: '填写学生资料<br><span class="text-base text-gray-500 font-normal mt-1 block">Profil Pelajar</span>', 
-        studentProfileSub: '请填写您孩子的资料以进行选课<br>Sila isi maklumat anak anda untuk pemilihan',
-        studentName: '学生姓名 / Nama Pelajar', 
-        studentClass: '班级 / Kelas (e.g. 1A)',
-        loginBtn: '开始选课 / Mula Pemilihan',
-        step1Title: '制服团体<br><span class="text-[10px] text-gray-400 font-normal">Badan Beruniform</span>', 
-        step2Title: '学会<br><span class="text-[10px] text-gray-400 font-normal">Kelab & Persatuan</span>', 
-        step3Title: '运动与游戏<br><span class="text-[10px] text-gray-400 font-normal">Sukan & Permainan</span>', 
-        step4Title: '确认<br><span class="text-[10px] text-gray-400 font-normal">Pengesahan</span>',
-        step1Desc: '请选择一个制服团体 (必选) / Sila pilih satu badan beruniform (Wajib)', 
-        step2Desc: '请选择一个学会 (必选) / Sila pilih satu kelab atau persatuan (Wajib)', 
-        step3Desc: '请选择一个运动或游戏 (必选) / Sila pilih satu sukan atau permainan (Wajib)',
-        summaryTitle: '确认选择 / Pengesahan Pilihan', 
-        summaryDesc: '请检查您为孩子选择的课外活动。 / Sila semak pilihan kokurikulum untuk anak anda.',
-        summaryMsg: '请确认您的选择。提交后，系统将保存该记录。<br>Sila sahkan pilihan anda. Selepas dihantar, ia akan direkodkan.',
-        btnBack: '上一步 / Kembali', 
-        btnNext: '下一步 / Seterusnya', 
-        btnSubmit: '确认提交 / Hantar',
-        full: '已满 Penuh', 
-        slots: '名额 Kekosongan',
-        successTitle: '提交成功！<br>Berjaya Dihantar!', 
-        successDesc: '您的课外活动选择已记录在案。<br>Pilihan kokurikulum anda telah direkodkan.',
-        emailSent: '报名报告将发送至您的邮箱 / Laporan pendaftaran akan dihantar ke e-mel anda: ',
-        uniform: '制服团体 / Badan Beruniform', 
-        society: '学会 / Kelab & Persatuan', 
-        sports: '运动与游戏 / Sukan & Permainan'
-    }
+            zh: { 
+                appTitle: '学校课外活动',
+                loginTitle: '学生登录<br><span class="text-base text-gray-500 font-normal mt-1 block">Log Masuk Pelajar</span>', 
+                loginSub: '请使用学校提供的 Google Delima 账号登录<br>Sila log masuk dengan akaun Google Delima sekolah',
+                googleLogin: '<div class="text-center leading-tight">使用 Delima 账号登录<br><span class="text-[10px] font-normal opacity-70">Log Masuk dengan Delima</span></div>',
+                studentProfile: '填写学生资料<br><span class="text-base text-gray-500 font-normal mt-1 block">Profil Pelajar</span>', 
+                studentProfileSub: '请填写您孩子的资料以进行选课<br>Sila isi maklumat anak anda untuk pemilihan',
+                studentName: '学生姓名 / Nama Pelajar', 
+                studentClass: '班级 / Kelas (e.g. 1A)',
+                loginBtn: '开始选课 / Mula Pemilihan',
+                step1Title: '制服团体<br><span class="text-[10px] text-gray-400 font-normal">Badan Beruniform</span>', 
+                step2Title: '学会<br><span class="text-[10px] text-gray-400 font-normal">Kelab & Persatuan</span>', 
+                step3Title: '运动与游戏<br><span class="text-[10px] text-gray-400 font-normal">Sukan & Permainan</span>', 
+                step4Title: '确认<br><span class="text-[10px] text-gray-400 font-normal">Pengesahan</span>',
+                step1Desc: '请选择一个制服团体 (必选) / Sila pilih satu badan beruniform (Wajib)', 
+                step2Desc: '请选择一个学会 (必选) / Sila pilih satu kelab atau persatuan (Wajib)', 
+                step3Desc: '请选择一个运动或游戏 (必选) / Sila pilih satu sukan atau permainan (Wajib)',
+                summaryTitle: '确认选择 / Pengesahan Pilihan', 
+                summaryDesc: '请检查您为孩子选择的课外活动。 / Sila semak pilihan kokurikulum untuk anak anda.',
+                summaryMsg: '请确认您的选择。提交后，系统将保存该记录。<br>Sila sahkan pilihan anda. Selepas dihantar, ia akan direkodkan.',
+                btnBack: '上一步 / Kembali', 
+                btnNext: '下一步 / Seterusnya', 
+                btnSubmit: '确认提交 / Hantar',
+                full: '已满 Penuh', 
+                slots: '名额 Kekosongan',
+                successTitle: '提交成功！<br>Berjaya Dihantar!', 
+                successDesc: '您的课外活动选择已记录在案。<br>Pilihan kokurikulum anda telah direkodkan.',
+                emailSent: '报名报告将发送至您的邮箱 / Laporan pendaftaran akan dihantar ke e-mel anda: ',
+                uniform: '制服团体 / Badan Beruniform', 
+                society: '学会 / Kelab & Persatuan', 
+                sports: '运动与游戏 / Sukan & Permainan'
+            }
         };
 
         const CLUBS_DATA = [
-            // STEP 1: Uniform
             { id: 'u1', category: 'uniform', name_zh: '童军', name_ms: 'Pengakap', desc_zh: '学习野外求生、步操与纪律。', desc_ms: 'Pelajari ikhtiar hidup, kawat dan disiplin.', capacity: 40, enrolled: 38, icon: 'fa-campground', color: 'text-amber-600 bg-amber-50 border-amber-200' },
-            { id: 'u2', category: 'uniform', name_zh: '红新月会', name_ms: 'Bulan Sabit Merah', desc_zh: '学习急救知识与人道救援精神。', desc_ms: 'Pelajari asas pertolongan cemas dan semangat kemanusiaan.', capacity: 40, enrolled: 40, icon: 'fa-truck-medical', color: 'text-red-600 bg-red-50 border-red-200' }, // Full
+            { id: 'u2', category: 'uniform', name_zh: '红新月会', name_ms: 'Bulan Sabit Merah', desc_zh: '学习急救知识与人道救援精神。', desc_ms: 'Pelajari asas pertolongan cemas dan semangat kemanusiaan.', capacity: 40, enrolled: 40, icon: 'fa-truck-medical', color: 'text-red-600 bg-red-50 border-red-200' },
             { id: 'u3', category: 'uniform', name_zh: '少年警察', name_ms: 'Kadet Polis', desc_zh: '培养领导能力与维护治安的意识。', desc_ms: 'Bina ciri kepimpinan dan kesedaran menjaga keamanan.', capacity: 35, enrolled: 20, icon: 'fa-shield-halved', color: 'text-blue-700 bg-blue-50 border-blue-200' },
             { id: 'u4', category: 'uniform', name_zh: '圣约翰救伤队', name_ms: 'St. John Ambulans', desc_zh: '专业的急救与护理训练。', desc_ms: 'Latihan pertolongan cemas dan penjagaan profesional.', capacity: 30, enrolled: 15, icon: 'fa-suitcase-medical', color: 'text-gray-800 bg-gray-100 border-gray-300' },
             
-            // STEP 2: Society
             { id: 's1', category: 'society', name_zh: '科学与数学学会', name_ms: 'Persatuan Sains & Matematik', desc_zh: '探索有趣的科学实验与数学逻辑。', desc_ms: 'Terokai eksperimen sains dan logik matematik yang menarik.', capacity: 30, enrolled: 12, icon: 'fa-flask', color: 'text-indigo-600 bg-indigo-50 border-indigo-200' },
-            { id: 's2', category: 'society', name_zh: '电脑学会', name_ms: 'Kelab Komputer', desc_zh: '学习编程、网页设计与多媒体技能。', desc_ms: 'Pelajari pengaturcaraan, reka bentuk web & multimedia.', capacity: 25, enrolled: 25, icon: 'fa-laptop-code', color: 'text-cyan-600 bg-cyan-50 border-cyan-200' }, // Full
+            { id: 's2', category: 'society', name_zh: '电脑学会', name_ms: 'Kelab Komputer', desc_zh: '学习编程、网页设计与多媒体技能。', desc_ms: 'Pelajari pengaturcaraan, reka bentuk web & multimedia.', capacity: 25, enrolled: 25, icon: 'fa-laptop-code', color: 'text-cyan-600 bg-cyan-50 border-cyan-200' },
             { id: 's3', category: 'society', name_zh: '美术学会', name_ms: 'Kelab Seni Lukis', desc_zh: '培养艺术天赋，学习各种绘画技巧。', desc_ms: 'Kembangkan bakat seni, pelajari pelbagai teknik lukisan.', capacity: 30, enrolled: 28, icon: 'fa-palette', color: 'text-pink-600 bg-pink-50 border-pink-200' },
             { id: 's4', category: 'society', name_zh: '华文学会', name_ms: 'Persatuan Bahasa Cina', desc_zh: '传承中华文化，举办书法、辩论等活动。', desc_ms: 'Warisi budaya, anjur aktiviti kaligrafi dan perbahasan.', capacity: 50, enrolled: 30, icon: 'fa-book-open', color: 'text-red-700 bg-red-50 border-red-200' },
 
-            // STEP 3: Sports
             { id: 'sp1', category: 'sports', name_zh: '篮球学会', name_ms: 'Kelab Bola Keranjang', desc_zh: '提升篮球技巧，培养团队合作精神。', desc_ms: 'Tingkatkan kemahiran bola keranjang, pupuk kerjasama.', capacity: 40, enrolled: 35, icon: 'fa-basketball', color: 'text-orange-600 bg-orange-50 border-orange-200' },
-            { id: 'sp2', category: 'sports', name_zh: '羽毛球学会', name_ms: 'Kelab Badminton', desc_zh: '适合各阶段水平，提供专业指导。', desc_ms: 'Sesuai untuk semua tahap, bimbingan profesional disediakan.', capacity: 40, enrolled: 40, icon: 'fa-table-tennis-paddle-ball', color: 'text-teal-600 bg-teal-50 border-teal-200' }, // Full
+            { id: 'sp2', category: 'sports', name_zh: '羽毛球学会', name_ms: 'Kelab Badminton', desc_zh: '适合各阶段水平，提供专业指导。', desc_ms: 'Sesuai untuk semua tahap, bimbingan profesional disediakan.', capacity: 40, enrolled: 40, icon: 'fa-table-tennis-paddle-ball', color: 'text-teal-600 bg-teal-50 border-teal-200' },
             { id: 'sp3', category: 'sports', name_zh: '足球学会', name_ms: 'Kelab Bola Sepak', desc_zh: '在绿茵场上挥洒汗水，锻炼体魄。', desc_ms: 'Bersenam dan tingkatkan kecergasan di padang hijau.', capacity: 50, enrolled: 22, icon: 'fa-futbol', color: 'text-green-600 bg-green-50 border-green-200' },
             { id: 'sp4', category: 'sports', name_zh: '田径学会', name_ms: 'Kelab Olahraga', desc_zh: '发掘跑步与田赛潜能，代表学校参赛。', desc_ms: 'Cungkil potensi balapan & padang, wakili sekolah.', capacity: 45, enrolled: 15, icon: 'fa-person-running', color: 'text-yellow-600 bg-yellow-50 border-yellow-200' }
         ];
 
         const STATE = {
             lang: 'zh',
-            step: 0, // 0: Login, 1: Uniform, 2: Society, 3: Sports, 4: Summary, 5: Success
-            studentInfo: null, // { name, cls }
-            selections: {
-                step1: null,
-                step2: null,
-                step3: null
-            },
+            step: 0,
+            studentInfo: null,
+            selections: { step1: null, step2: null, step3: null },
             userId: null,
             parentEmail: null
         };
 
         const DOM = {
-            langZh: document.getElementById('lang-zh'),
-            langMs: document.getElementById('lang-ms'),
             viewLogin: document.getElementById('view-login'),
             viewWizard: document.getElementById('view-wizard'),
-            
             authSection: document.getElementById('auth-section'),
             btnGoogleLogin: document.getElementById('btn-google-login'),
             studentForm: document.getElementById('student-form'),
             loginHeaderTitle: document.getElementById('login-header-title'),
             loginHeaderDesc: document.getElementById('login-header-desc'),
-            
             btnLogout: document.getElementById('btn-logout'),
-            
             stepperProgress: document.getElementById('stepper-progress'),
             wizardTitle: document.getElementById('wizard-step-title'),
             wizardDesc: document.getElementById('wizard-step-desc'),
@@ -321,32 +295,30 @@ zh: {
             successContainer: document.getElementById('success-container'),
             successEmail: document.getElementById('success-email'),
             wizardNav: document.getElementById('wizard-nav'),
-            
             btnPrev: document.getElementById('btn-prev'),
             btnNext: document.getElementById('btn-next'),
             btnNextText: document.getElementById('btn-next-text')
         };
 
         let db, auth, googleProvider;
-        
-        // 设定允许登入的电邮后缀 (Google Delima 域名)
-        // ⚠️ 温馨提示: 自己测试时请改成 ['moe-dl.edu.my', 'gmail.com']，正式给学生用时再删掉 'gmail.com'
         const ALLOWED_DOMAINS = ['moe-dl.edu.my', 'gmail.com'];
+
+        function updateTranslations() {
+            const strings = I18N['zh']; 
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (strings[key]) el.innerHTML = strings[key]; // 必须是 innerHTML，否则 <br> 不会生效
+            });
+            document.getElementById('input-student-name').placeholder = "例如 / Cth: Ali bin Abu";
+            document.getElementById('input-student-class').placeholder = "例如 / Cth: 1A";
+        }
 
         async function initFirebase() {
             try {
-                // 检查是否已经填入了真实的 API Key
-                if (firebaseConfig.apiKey === "YOUR_API_KEY") {
-                    console.warn("尚未配置 Firebase Config，请先配置以启用真实登入功能。");
-                    return;
-                }
-
                 const app = initializeApp(firebaseConfig);
                 db = getFirestore(app);
                 auth = getAuth(app);
                 googleProvider = new GoogleAuthProvider();
-                
-                // 强制每次登入时选择账号 (避免浏览器记住旧账号导致无法切换)
                 googleProvider.setCustomParameters({ prompt: 'select_account' });
 
                 onAuthStateChanged(auth, async (user) => {
@@ -355,9 +327,7 @@ zh: {
                         const isAllowed = ALLOWED_DOMAINS.some(domain => userEmail.endsWith('@' + domain));
                         
                         if (!isAllowed) {
-                            alert(STATE.lang === 'zh' 
-                                ? "登入拦截 🛑\n\n为了防止重复填写，系统仅允许使用学生专属的 Google Delima 账号 (@moe-dl.edu.my) 进行登入。\n请使用正确的账号重新登入。" 
-                                : "Log Masuk Dihalang 🛑\n\nSila gunakan akaun Google Delima (@moe-dl.edu.my) sahaja.");
+                            alert("登入拦截 🛑\n\n为了防止重复填写，系统仅允许使用学生专属的 Google Delima 账号 (@moe-dl.edu.my) 进行登入。\n请使用正确的账号重新登入。");
                             await signOut(auth); 
                             return; 
                         }
@@ -375,30 +345,22 @@ zh: {
                 });
             } catch (error) {
                 console.error("Firebase 初始化失败:", error);
-                alert("系统连接失败，请检查 Firebase 配置。");
             }
         }
 
         async function handleGoogleLogin() {
-            if (!auth) {
-                alert("请先在代码中填入 Firebase Config 才能启用真实登入功能！");
-                return;
-            }
+            if (!auth) return;
             try {
                 DOM.btnGoogleLogin.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i>`;
                 await signInWithPopup(auth, googleProvider);
             } catch (error) {
                 console.error("Google Login Error:", error);
-                const t = I18N[STATE.lang];
+                const t = I18N['zh'];
                 
-                // 修复：捕获未授权域名的错误，进入模拟模式以便预览测试
                 if (error.code === 'auth/unauthorized-domain') {
                     const currentDomain = window.location.hostname || "当前预览沙盒";
-                    alert(STATE.lang === 'zh' 
-                        ? `⚠️ 测试环境拦截 (auth/unauthorized-domain)\n\n由于当前运行环境 (${currentDomain}) 尚未加入 Firebase 白名单，Google 阻止了真实的登入。\n\n系统现已为您切换至【模拟测试模式】，让您可以继续体验选课流程！` 
-                        : `⚠️ Domain Dihalang (auth/unauthorized-domain)\n\nSistem Google menghalang log masuk dari domain ujian ini.\n\nBertukar ke 【Mod Demo】 untuk membenarkan anda meneruskan ujian.`);
+                    alert(`⚠️ 测试环境拦截 (auth/unauthorized-domain)\n\n由于当前运行环境 (${currentDomain}) 尚未加入 Firebase 白名单，Google 阻止了真实的登入。\n\n系统现已为您切换至【模拟测试模式】，让您可以继续体验选课流程！`);
                     
-                    // 启动模拟账号
                     STATE.userId = "demo-student-id";
                     STATE.parentEmail = "demo-student@moe-dl.edu.my";
                     DOM.btnLogout.classList.remove('hidden');
@@ -406,8 +368,7 @@ zh: {
                     return;
                 }
 
-                // 修改这里：让系统把真正的英文错误代码显示出来，方便我们找问题！
-                alert(STATE.lang === 'zh' ? `登录失败。错误信息: \n${error.message}` : `Log masuk gagal: \n${error.message}`);
+                alert(`登录失败或已取消。\n错误信息: ${error.message}`);
                 DOM.btnGoogleLogin.innerHTML = `<img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5 h-5"><span data-i18n="googleLogin">${t.googleLogin}</span>`;
             }
         }
@@ -417,19 +378,19 @@ zh: {
             DOM.viewLogin.classList.remove('hidden');
             DOM.viewWizard.classList.add('hidden');
             
-            const t = I18N[STATE.lang];
+            const t = I18N['zh'];
             
             if (requiresAuth) {
                 DOM.authSection.classList.remove('hidden');
                 DOM.studentForm.classList.add('hidden');
-                DOM.loginHeaderTitle.textContent = t.loginTitle;
-                DOM.loginHeaderDesc.textContent = t.loginSub;
+                DOM.loginHeaderTitle.innerHTML = t.loginTitle;
+                DOM.loginHeaderDesc.innerHTML = t.loginSub;
                 DOM.btnGoogleLogin.innerHTML = `<img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5 h-5"><span data-i18n="googleLogin">${t.googleLogin}</span>`;
             } else {
                 DOM.authSection.classList.add('hidden');
                 DOM.studentForm.classList.remove('hidden');
-                DOM.loginHeaderTitle.textContent = t.studentProfile;
-                DOM.loginHeaderDesc.textContent = t.studentProfileSub;
+                DOM.loginHeaderTitle.innerHTML = t.studentProfile;
+                DOM.loginHeaderDesc.innerHTML = t.studentProfileSub;
             }
         }
 
@@ -439,7 +400,6 @@ zh: {
                 return;
             }
             try {
-                // 修复：更改为与保存资料时一致的正确路径 'club_registrations'
                 const docRef = doc(db, 'club_registrations', STATE.userId);
                 const docSnap = await getDoc(docRef);
                 if (docSnap.exists()) {
@@ -447,32 +407,21 @@ zh: {
                     if (data.submitted) {
                         STATE.studentInfo = data.studentInfo;
                         STATE.selections = data.selections;
-                        showStep(5); // Show success immediately if already submitted
+                        showStep(5);
                         return;
                     }
                 }
-                showLoginView(false); // Show student info form
+                showLoginView(false);
             } catch (e) {
                 console.error(e);
                 showLoginView(false);
             }
         }
 
-        function updateTranslations() {
-    const strings = I18N['zh']; // 强制只读取上面设置好的混合双语
-    document.querySelectorAll('[data-i18n]').forEach(el => {
-        const key = el.getAttribute('data-i18n');
-        if (strings[key]) el.innerHTML = strings[key]; // 这里从 textContent 改成 innerHTML
-    });
-    document.getElementById('input-student-name').placeholder = "例如 / Cth: Ali bin Abu";
-    document.getElementById('input-student-class').placeholder = "例如 / Cth: 1A";
-}
-
         function handleStudentSubmit(e) {
             e.preventDefault();
             const name = document.getElementById('input-student-name').value.trim();
             const cls = document.getElementById('input-student-class').value.trim();
-            
             if (name && cls) {
                 STATE.studentInfo = { name, cls };
                 showStep(1);
@@ -488,18 +437,14 @@ zh: {
             document.getElementById('student-form').reset();
             DOM.btnLogout.classList.add('hidden');
             
-            const t = I18N[STATE.lang];
+            const t = I18N['zh'];
             DOM.btnGoogleLogin.innerHTML = `<img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5 h-5"><span data-i18n="googleLogin">${t.googleLogin}</span>`;
-            
             showLoginView(true);
         }
 
         function showStep(stepNum) {
             STATE.step = stepNum;
-            
             if (stepNum === 0) {
-                // Handled by showLoginView internally now based on auth state, 
-                // but if called explicitly:
                 showLoginView(!STATE.userId);
             } else {
                 DOM.viewLogin.classList.add('hidden');
@@ -512,12 +457,9 @@ zh: {
         function updateStepperUI() {
             if (STATE.step >= 5) {
                 DOM.wizardNav.classList.add('hidden');
-                return; // Hide stepper on success view conceptually, but here we just leave it at 100%
+                return;
             }
-            
             DOM.wizardNav.classList.remove('hidden');
-            
-            // Progress Bar width: 1=0%, 2=33%, 3=66%, 4=100%
             const progress = (STATE.step - 1) * 33.33;
             DOM.stepperProgress.style.width = `${progress}%`;
 
@@ -526,17 +468,14 @@ zh: {
                 const label = document.getElementById(`step-label-${i}`);
                 
                 if (i < STATE.step) {
-                    // Completed
                     circle.className = "w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm bg-brand-600 text-white ring-4 ring-white shadow-sm transition-colors";
                     circle.innerHTML = `<i class="fa-solid fa-check"></i>`;
                     label.className = "text-xs font-medium mt-2 text-brand-700";
                 } else if (i === STATE.step) {
-                    // Current
                     circle.className = "w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm bg-brand-600 text-white ring-4 ring-brand-100 shadow-sm transition-colors";
                     circle.innerHTML = i === 4 ? `<i class="fa-solid fa-check"></i>` : i;
                     label.className = "text-xs font-medium mt-2 text-brand-700";
                 } else {
-                    // Upcoming
                     circle.className = "w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm bg-gray-200 text-gray-500 ring-4 ring-white shadow-sm transition-colors";
                     circle.innerHTML = i === 4 ? `<i class="fa-solid fa-check"></i>` : i;
                     label.className = "text-xs font-medium mt-2 text-gray-500";
@@ -545,44 +484,41 @@ zh: {
         }
 
         function renderCurrentStep() {
-            const t = I18N[STATE.lang];
+            const t = I18N['zh'];
             
-            // Hide all specific containers first
             DOM.clubsGrid.classList.add('hidden');
             DOM.summaryContainer.classList.add('hidden');
             DOM.successContainer.classList.add('hidden');
             
-            // Buttons logic
             DOM.btnPrev.classList.toggle('hidden', STATE.step === 1 || STATE.step === 5);
             DOM.btnNext.classList.toggle('hidden', STATE.step === 5);
             
             if (STATE.step <= 3) {
                 DOM.clubsGrid.classList.remove('hidden');
-                DOM.wizardTitle.textContent = t[`step${STATE.step}Title`];
-                DOM.wizardDesc.textContent = t[`step${STATE.step}Desc`];
-                DOM.btnNextText.textContent = t.btnNext;
+                DOM.wizardTitle.innerHTML = t[`step${STATE.step}Title`];
+                DOM.wizardDesc.innerHTML = t[`step${STATE.step}Desc`];
+                DOM.btnNextText.innerHTML = t.btnNext;
                 renderClubsGrid();
             } else if (STATE.step === 4) {
                 DOM.summaryContainer.classList.remove('hidden');
-                DOM.wizardTitle.textContent = t.summaryTitle;
-                DOM.wizardDesc.textContent = t.summaryDesc;
-                DOM.btnNextText.textContent = t.btnSubmit;
+                DOM.wizardTitle.innerHTML = t.summaryTitle;
+                DOM.wizardDesc.innerHTML = t.summaryDesc;
+                DOM.btnNextText.innerHTML = t.btnSubmit;
                 renderSummary();
-                DOM.btnNext.disabled = false; // Summary can always submit
+                DOM.btnNext.disabled = false;
             } else if (STATE.step === 5) {
                 DOM.successContainer.classList.remove('hidden');
-                DOM.wizardTitle.parentElement.classList.add('hidden'); // Hide title section
+                DOM.wizardTitle.parentElement.classList.add('hidden');
                 renderSuccess();
             }
         }
 
         function renderClubsGrid() {
-            const t = I18N[STATE.lang];
+            const t = I18N['zh'];
             const categories = ['uniform', 'society', 'sports'];
             const currentCat = categories[STATE.step - 1];
             const stepKey = `step${STATE.step}`;
             const selectedId = STATE.selections[stepKey];
-            
             const clubs = CLUBS_DATA.filter(c => c.category === currentCat);
             
             DOM.clubsGrid.innerHTML = '';
@@ -590,11 +526,10 @@ zh: {
             clubs.forEach(club => {
                 const isFull = club.enrolled >= club.capacity;
                 const isChecked = selectedId === club.id;
-                
                 const card = document.createElement('div');
                 card.className = "relative";
                 
-card.innerHTML = `
+                card.innerHTML = `
                     <input type="radio" name="club-selection" id="${club.id}" value="${club.id}" 
                            class="club-card-input peer sr-only" ${isFull && !isChecked ? 'disabled' : ''} ${isChecked ? 'checked' : ''}>
                     <label for="${club.id}" class="club-card-label flex p-4 cursor-pointer bg-white border border-gray-200 rounded-xl transition-all h-full hover:border-brand-300 hover:shadow-sm">
@@ -618,32 +553,27 @@ card.innerHTML = `
                             
                             <div class="inline-flex items-center px-2 py-1 rounded text-xs font-semibold ${isFull ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-gray-100 text-gray-600'}">
                                 <i class="fa-solid fa-user-group mr-1.5"></i>
-                                ${isFull ? t.full : `${club.enrolled}/${club.capacity}${t.slots}`}
+                                ${isFull ? t.full : `${club.enrolled}/${club.capacity} ${t.slots}`}
                             </div>
                         </div>
                     </label>
                 `;
-                
                 DOM.clubsGrid.appendChild(card);
             });
 
-            // Listen for changes to enable/disable Next button
             const inputs = document.querySelectorAll('input[name="club-selection"]');
-            
             const checkNextState = () => {
                 const checked = document.querySelector('input[name="club-selection"]:checked');
                 DOM.btnNext.disabled = !checked;
                 if(checked) STATE.selections[stepKey] = checked.value;
             };
-            
             inputs.forEach(input => input.addEventListener('change', checkNextState));
-            checkNextState(); // Initial check
+            checkNextState();
         }
 
         function renderSummary() {
-            const t = I18N[STATE.lang];
+            const t = I18N['zh'];
             DOM.summaryList.innerHTML = '';
-            
             const cats = ['uniform', 'society', 'sports'];
             
             for (let i = 1; i <= 3; i++) {
@@ -658,8 +588,9 @@ card.innerHTML = `
                                 ${i}
                             </div>
                             <div class="flex-grow">
-                                <p class="text-xs text-gray-500 mb-0.5">${stepCatName}</p>
-                                <h4 class="font-bold text-gray-900">${club[`name_${STATE.lang}`]}</h4>
+                                <p class="text-[10px] text-gray-500 mb-1">${stepCatName}</p>
+                                <h4 class="font-bold text-gray-900 leading-tight">${club.name_zh}</h4>
+                                <h5 class="text-xs text-gray-500">${club.name_ms}</h5>
                             </div>
                             <div class="text-2xl opacity-20 ml-2">
                                 <i class="fa-solid ${club.icon}"></i>
@@ -671,10 +602,8 @@ card.innerHTML = `
         }
         
         function renderSuccess() {
-             const t = I18N[STATE.lang];
+             const t = I18N['zh'];
              const details = document.getElementById('success-details');
-             
-             // Set email to be sent to
              DOM.successEmail.textContent = STATE.parentEmail || 'your-email@example.com';
              
              details.innerHTML = `
@@ -690,7 +619,7 @@ card.innerHTML = `
                     <span class="text-xs text-brand-600 font-bold tracking-wider uppercase mb-2 block">Selections / 已选</span>
                     ${[1,2,3].map(i => {
                         const club = CLUBS_DATA.find(c => c.id === STATE.selections[`step${i}`]);
-                        return `<div class="text-sm font-medium text-gray-800 py-1 flex items-center gap-2"><i class="fa-solid fa-check text-green-500 text-xs"></i> ${club ? club[`name_${STATE.lang}`] : ''}</div>`;
+                        return `<div class="text-sm font-medium text-gray-800 py-1.5 flex items-start gap-2 border-b border-gray-100 last:border-0"><i class="fa-solid fa-check text-green-500 text-xs mt-1"></i> <div><div>${club ? club.name_zh : ''}</div><div class="text-xs text-gray-500">${club ? club.name_ms : ''}</div></div></div>`;
                     }).join('')}
                 </div>
              `;
@@ -703,11 +632,10 @@ card.innerHTML = `
             
             try {
                 if (db && STATE.userId) {
-                    // 如果是模拟测试账号，跳过真实的资料库写入以避免报错
                     if (STATE.userId === 'demo-student-id') {
-                        console.log("[Demo Mode] 模拟数据保存成功，跳过真实的 Firestore 写入。");
+                        console.log("[Demo Mode] 模拟数据保存成功");
                     } else {
-                        const docRef = doc(db, 'club_registrations', STATE.userId); // 改为统一存放在 club_registrations 集合中
+                        const docRef = doc(db, 'club_registrations', STATE.userId);
                         await setDoc(docRef, {
                             studentInfo: STATE.studentInfo,
                             parentEmail: STATE.parentEmail,
@@ -715,62 +643,41 @@ card.innerHTML = `
                             submitted: true,
                             timestamp: new Date().toISOString()
                         });
-                        console.log(`[Database] Registration report successfully saved for ${STATE.parentEmail}`);
                     }
                 }
 
-                // ==============================================================
-                // EMAILJS: 发送真实邮件逻辑
-                // ==============================================================
-                try {
-                    // ⚠️ 注意：您需要在这里填入您在 EmailJS 网站上获得的真实 ID
-                    const EMAILJS_SERVICE_ID = 'service_bwzihgq';   // 例如: 'service_xyz123'
-                    const EMAILJS_TEMPLATE_ID = 'template_z1h7bmb'; // 例如: 'template_abc456'
-                    const EMAILJS_PUBLIC_KEY = 'ADioVrvLS4IlQK0J2';   // 例如: 'pubkey_qwertyuiop'
+                // ⚠️ 特别注意：请记得在这里填入您的 EmailJS ID！
+                const EMAILJS_SERVICE_ID = 'YOUR_SERVICE_ID';   
+                const EMAILJS_TEMPLATE_ID = 'YOUR_TEMPLATE_ID'; 
+                const EMAILJS_PUBLIC_KEY = 'YOUR_PUBLIC_KEY';   
+                
+                if (EMAILJS_PUBLIC_KEY !== 'YOUR_PUBLIC_KEY') {
+                    emailjs.init(EMAILJS_PUBLIC_KEY);
+                    const club1 = CLUBS_DATA.find(c => c.id === STATE.selections.step1);
+                    const club2 = CLUBS_DATA.find(c => c.id === STATE.selections.step2);
+                    const club3 = CLUBS_DATA.find(c => c.id === STATE.selections.step3);
                     
-                    if (EMAILJS_PUBLIC_KEY !== 'YOUR_PUBLIC_KEY') {
-                        emailjs.init(EMAILJS_PUBLIC_KEY);
-                        
-                        // 获取所选社团的具体名称
-                        const club1 = CLUBS_DATA.find(c => c.id === STATE.selections.step1);
-                        const club2 = CLUBS_DATA.find(c => c.id === STATE.selections.step2);
-                        const club3 = CLUBS_DATA.find(c => c.id === STATE.selections.step3);
-
-                        // 准备传递给邮件模板的参数
-                        const templateParams = {
-                            to_email: STATE.parentEmail,
-                            student_name: STATE.studentInfo.name,
-                            student_class: STATE.studentInfo.cls,
-                            uniform_club: club1 ? club1[`name_${STATE.lang}`] : '',
-                            society_club: club2 ? club2[`name_${STATE.lang}`] : '',
-                            sports_club: club3 ? club3[`name_${STATE.lang}`] : ''
-                        };
-
-                        // 触发发送邮件
-                        await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams);
-                        console.log("EmailJS: 真实邮件发送成功！");
-                    } else {
-                        console.warn("EmailJS: 未配置 Key，已跳过发送真实电邮。请在代码中填写您的 ID。");
-                    }
-                } catch (emailErr) {
-                    console.error("EmailJS 发送失败:", emailErr);
-                    // 邮件发送失败不会阻止页面显示成功信息，仅在控制台报错
+                    const templateParams = {
+                        to_email: STATE.parentEmail,
+                        student_name: STATE.studentInfo.name,
+                        student_class: STATE.studentInfo.cls,
+                        uniform_club: club1 ? club1.name_zh : '',
+                        society_club: club2 ? club2.name_zh : '',
+                        sports_club: club3 ? club3.name_zh : ''
+                    };
+                    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams);
                 }
-                // ==============================================================
 
-                showStep(5); // Success view
+                showStep(5); 
             } catch (err) {
                 console.error(err);
                 alert("Error saving data. Please try again.");
-                const t = I18N[STATE.lang];
-                DOM.btnNext.innerHTML = `<span id="btn-next-text">${t.btnSubmit}</span> <i class="fa-solid fa-arrow-right"></i>`;
+                DOM.btnNext.innerHTML = `<span id="btn-next-text">确认提交 / Hantar</span> <i class="fa-solid fa-arrow-right"></i>`;
                 DOM.btnNext.disabled = false;
                 DOM.btnPrev.disabled = false;
             }
         }
 
-        // Event Listeners
-        document.getElementById('lang-toggle-btn').addEventListener('click', toggleLanguage);
         DOM.btnGoogleLogin.addEventListener('click', handleGoogleLogin);
         DOM.studentForm.addEventListener('submit', handleStudentSubmit);
         DOM.btnLogout.addEventListener('click', handleLogout);
@@ -781,15 +688,16 @@ card.innerHTML = `
         
         DOM.btnNext.addEventListener('click', () => {
             if (STATE.step < 4) {
-                // Next step logic handles validation via disabled button
                 showStep(STATE.step + 1);
             } else if (STATE.step === 4) {
-                // Submit
                 submitData();
             }
         });
 
-        window.addEventListener('DOMContentLoaded', initFirebase);
+        window.addEventListener('DOMContentLoaded', () => {
+            updateTranslations();
+            initFirebase();
+        });
     </script>
 </body>
 </html>
