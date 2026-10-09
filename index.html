@@ -7,14 +7,15 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     fontFamily: {
-                        sans: ['Inter', 'Noto Sans SC', 'sans-serif'],
+                        // 加入了各平台 (Windows/Mac/手机) 默认的楷体设定
+                        sans: ['Inter', '"楷体"', '"KaiTi"', '"STKaiti"', '"Kaiti SC"', 'sans-serif'],
                     },
                     colors: {
                         brand: {
@@ -71,7 +72,7 @@
                     </div>
                     <div class="flex flex-col">
                         <span class="font-bold text-lg text-gray-900 leading-tight">纳闽启文小学课外活动</span>
-                        <span class="text-[10px] text-brand-600 font-medium tracking-wide">Pemilihan Kokurikulum SJKC CHI WEN</span>
+                        <span class="font-bold text-base text-brand-600 leading-tight mt-0.5">Pemilihan Kokurikulum SJKC CHI WEN</span>
                     </div>
                 </div>
                 
@@ -217,29 +218,29 @@
 
         // 统一双语词典 (带换行标签)
         const I18N = {
-            loginTitle: '学生登录<br><span class="text-base text-gray-500 font-normal mt-1 block">Log Masuk Pelajar</span>', 
+            loginTitle: '学生登录<br><span class="mt-1 block">Log Masuk Pelajar</span>', 
             loginSub: '请使用学校提供的 Google Delima 账号登录<br>Sila log masuk dengan akaun Google Delima sekolah',
-            googleLogin: '<div class="text-center leading-tight">使用 Delima 账号登录<br><span class="text-[10px] font-normal opacity-70">Log Masuk dengan Delima</span></div>',
-            studentProfile: '填写学生资料<br><span class="text-base text-gray-500 font-normal mt-1 block">Profil Pelajar</span>', 
+            googleLogin: '<div class="text-center leading-tight">使用 Delima 账号登录<br><span class="block mt-1">Log Masuk dengan Delima</span></div>',
+            studentProfile: '填写学生资料<br><span class="mt-1 block">Profil Pelajar</span>', 
             studentProfileSub: '请填写您孩子的资料以进行选课<br>Sila isi maklumat anak anda untuk pemilihan',
             studentName: '学生姓名 / Nama Pelajar', 
             studentClass: '班级 / Kelas',
             loginBtn: '开始选课 / Mula Pemilihan',
-            step1Title: '制服团体<br><span class="text-[10px] text-gray-400 font-normal">Badan Beruniform</span>', 
-            step2Title: '学会<br><span class="text-[10px] text-gray-400 font-normal">Kelab & Persatuan</span>', 
-            step3Title: '运动与游戏<br><span class="text-[10px] text-gray-400 font-normal">Sukan & Permainan</span>', 
-            step4Title: '确认<br><span class="text-[10px] text-gray-400 font-normal">Pengesahan</span>',
+            step1Title: '制服团体<br><span class="block mt-0.5">Badan Beruniform</span>', 
+            step2Title: '学会<br><span class="block mt-0.5">Kelab & Persatuan</span>', 
+            step3Title: '运动与游戏<br><span class="block mt-0.5">Sukan & Permainan</span>', 
+            step4Title: '确认<br><span class="block mt-0.5">Pengesahan</span>',
             step1Desc: '请选择一个制服团体 (必选) / Sila pilih satu badan beruniform (Wajib)', 
             step2Desc: '请选择一个学会 (必选) / Sila pilih satu kelab atau persatuan (Wajib)', 
             step3Desc: '请选择一个运动或游戏 (必选) / Sila pilih satu sukan atau permainan (Wajib)',
             summaryTitle: '确认选择 / Pengesahan Pilihan', 
             summaryDesc: '请检查您的选择 / Sila semak pilihan anda.',
-            summaryMsg: '请确认您的选择。提交后将无法更改，并将维持至六年级。<br><span class="text-xs font-normal opacity-80 mt-1 block">Sila sahkan pilihan anda. Selepas dihantar, ia tidak boleh ditukar dan akan dikekalkan sehingga darjah enam.</span>',
+            summaryMsg: '请确认您的选择。提交后将无法更改，并将维持至六年级。<br><span class="mt-1 block">Sila sahkan pilihan anda. Selepas dihantar, ia tidak boleh ditukar dan akan dikekalkan sehingga darjah enam.</span>',
             btnBack: '上一步 / Kembali', 
             btnNext: '下一步 / Seterusnya', 
             btnSubmit: '确认提交 / Hantar',
-            full: '已满 Penuh', 
-            slots: '名额 Kekosongan',
+            full: '已满 / Penuh', 
+            slots: '名额 / Kekosongan',
             successTitle: '提交成功！<br>Berjaya Dihantar!', 
             successDesc: '您的课外活动选择已记录在案。<br>Pilihan kokurikulum anda telah direkodkan.',
             uniform: '制服团体 / Badan Beruniform', 
@@ -607,17 +608,16 @@
                             <div class="flex justify-between items-start">
                                 <div>
                                     <h3 class="font-bold text-gray-900 leading-tight text-[15px]">${club.name_zh}</h3>
-                                    <div class="text-[11px] text-gray-500 font-medium mb-1 tracking-wide mt-0.5">${club.name_ms}</div>
+                                    <h3 class="font-bold text-gray-900 leading-tight text-[15px] mt-1 mb-1">${club.name_ms}</h3>
                                 </div>
                                 <div class="check-icon opacity-0 transform scale-50 transition-all text-brand-600 bg-brand-100 rounded-full w-6 h-6 flex items-center justify-center flex-shrink-0 ml-2 shadow-sm border border-brand-200">
                                     <i class="fa-solid fa-check text-xs"></i>
                                 </div>
                             </div>
                             
-                            ${club.desc_zh ? `<p class="text-[11px] text-orange-600 font-medium mt-2 bg-orange-50 px-2 py-0.5 rounded inline-block">${club.desc_zh}</p>` : ''}
-                            ${club.desc_ms ? `<p class="text-[10px] text-orange-500 mb-2 italic mt-0.5">${club.desc_ms}</p>` : ''}
+                            ${club.desc_zh ? `<div class="text-xs text-orange-700 font-bold mt-2 bg-orange-50 px-2 py-1 rounded inline-block border border-orange-100">${club.desc_zh}<br>${club.desc_ms}</div>` : ''}
                             
-                            <div class="inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-bold mt-2.5 shadow-sm ${isFull ? 'bg-red-50 text-red-600 border border-red-200' : 'bg-gray-100 text-gray-600 border border-gray-200'}">
+                            <div class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold mt-2.5 shadow-sm ${isFull ? 'bg-red-50 text-red-600 border border-red-200' : 'bg-gray-100 text-gray-700 border border-gray-200'}">
                                 <i class="fa-solid fa-user-group mr-1.5"></i>
                                 ${isFull ? I18N.full : `${currentEnrolled}/${club.capacity} ${I18N.slots}`}
                             </div>
@@ -655,7 +655,7 @@
                             <div class="flex-grow">
                                 <p class="text-[10px] text-brand-600 font-bold mb-1 tracking-wider uppercase">${stepCatName}</p>
                                 <h4 class="font-bold text-gray-900 leading-tight text-[15px]">${club.name_zh}</h4>
-                                <h5 class="text-xs text-gray-500 mt-0.5">${club.name_ms}</h5>
+                                <h4 class="font-bold text-gray-900 leading-tight text-[15px] mt-0.5">${club.name_ms}</h4>
                             </div>
                             <div class="text-3xl opacity-10 ml-2">
                                 <i class="fa-solid ${club.icon}"></i>
@@ -671,18 +671,18 @@
             
             details.innerHTML = `
                 <div class="flex justify-between items-center py-3 border-b border-gray-200">
-                    <span class="text-gray-500 text-sm">学生姓名<br><span class="text-[10px] uppercase">Nama Pelajar</span></span>
+                    <span class="text-gray-500 text-sm">学生姓名<br><span class="uppercase mt-0.5 block">Nama Pelajar</span></span>
                     <span class="font-bold text-gray-900 text-lg uppercase">${STATE.studentInfo.name}</span>
                 </div>
                 <div class="flex justify-between items-center py-3 mb-3 border-b border-gray-200">
-                    <span class="text-gray-500 text-sm">班级<br><span class="text-[10px] uppercase">Kelas</span></span>
+                    <span class="text-gray-500 text-sm">班级<br><span class="uppercase mt-0.5 block">Kelas</span></span>
                     <span class="font-bold text-gray-900 text-lg uppercase">${STATE.studentInfo.cls}</span>
                 </div>
                 <div class="pt-2">
                     <span class="text-xs text-brand-600 font-bold tracking-widest uppercase mb-3 block border-b border-brand-100 pb-2">Selections / 已选</span>
                     ${[1,2,3].map(i => {
                         const club = CLUBS_DATA.find(c => c.id === STATE.selections[`step${i}`]);
-                        return `<div class="text-sm font-medium text-gray-800 py-2.5 flex items-start gap-3 border-b border-gray-100 last:border-0"><i class="fa-solid fa-check-circle text-brand-500 text-sm mt-0.5 shadow-sm rounded-full"></i> <div><div class="font-bold">${club ? club.name_zh : ''}</div><div class="text-[11px] text-gray-500 mt-0.5">${club ? club.name_ms : ''}</div></div></div>`;
+                        return `<div class="text-sm font-medium text-gray-800 py-3 flex items-start gap-3 border-b border-gray-100 last:border-0"><i class="fa-solid fa-check-circle text-brand-500 text-base mt-1 shadow-sm rounded-full"></i> <div><div class="font-bold text-[15px]">${club ? club.name_zh : ''}</div><div class="font-bold text-[15px] text-gray-800 mt-1">${club ? club.name_ms : ''}</div></div></div>`;
                     }).join('')}
                 </div>
             `;
