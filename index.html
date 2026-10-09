@@ -74,8 +74,6 @@
                 
                 <div class="flex items-center gap-3">
                     <div class="flex items-center bg-gray-100 rounded-full p-1 cursor-pointer select-none" id="lang-toggle-btn">
-                        <div id="lang-zh" class="px-3 py-1 rounded-full text-sm font-medium transition-all duration-300 bg-white shadow-sm text-brand-700">华文</div>
-                        <div id="lang-ms" class="px-3 py-1 rounded-full text-sm font-medium transition-all duration-300 text-gray-500">BM</div>
                     </div>
                     <button id="btn-logout" class="hidden text-gray-500 hover:text-red-600 transition-colors ml-2" title="Logout">
                         <i class="fa-solid fa-right-from-bracket"></i>
@@ -233,40 +231,38 @@
         // ==========================================
 
         const I18N = {
-            zh: {
-                appTitle: '学校课外活动',
-                loginTitle: '学生登录', loginSub: '请使用学校提供的 Google Delima 账号登录',
-                googleLogin: '使用 Delima 账号登录',
-                studentProfile: '填写学生资料', studentProfileSub: '请填写您孩子的资料以进行选课',
-                studentName: '学生姓名', studentClass: '班级 (例如: 1A)',
-                loginBtn: '开始选课',
-                step1Title: '制服团体', step2Title: '学会', step3Title: '运动与游戏', step4Title: '确认',
-                step1Desc: '请选择一个制服团体 (必选)', step2Desc: '请选择一个学会 (必选)', step3Desc: '请选择一个运动或游戏 (必选)',
-                summaryTitle: '确认选择', summaryDesc: '请检查您为孩子选择的课外活动。',
-                summaryMsg: '请确认您的选择。提交后，系统将保存该记录。',
-                btnBack: '上一步', btnNext: '下一步', btnSubmit: '确认提交',
-                full: '已满', slots: '名额',
-                successTitle: '提交成功！', successDesc: '您的课外活动选择已记录在案。',
-                emailSent: '报名报告将发送至您的邮箱：',
-                uniform: '制服团体', society: '学会', sports: '运动与游戏'
-            },
-            ms: {
-                appTitle: 'Pemilihan Kokurikulum',
-                loginTitle: 'Log Masuk Pelajar', loginSub: 'Sila log masuk dengan akaun Google Delima sekolah',
-                googleLogin: 'Log Masuk dengan Delima',
-                studentProfile: 'Profil Pelajar', studentProfileSub: 'Sila isi maklumat anak anda untuk pemilihan',
-                studentName: 'Nama Pelajar', studentClass: 'Kelas (Cth: 1A)',
-                loginBtn: 'Mula Pemilihan',
-                step1Title: 'Badan Beruniform', step2Title: 'Kelab & Persatuan', step3Title: 'Sukan & Permainan', step4Title: 'Pengesahan',
-                step1Desc: 'Sila pilih satu badan beruniform (Wajib)', step2Desc: 'Sila pilih satu kelab atau persatuan (Wajib)', step3Desc: 'Sila pilih satu sukan atau permainan (Wajib)',
-                summaryTitle: 'Pengesahan Pilihan', summaryDesc: 'Sila semak pilihan kokurikulum untuk anak anda.',
-                summaryMsg: 'Sila sahkan pilihan anda. Selepas dihantar, ia akan direkodkan.',
-                btnBack: 'Kembali', btnNext: 'Seterusnya', btnSubmit: 'Hantar',
-                full: 'Penuh', slots: 'Kekosongan',
-                successTitle: 'Berjaya Dihantar!', successDesc: 'Pilihan kokurikulum anda telah direkodkan.',
-                emailSent: 'Laporan pendaftaran akan dihantar ke e-mel anda: ',
-                uniform: 'Badan Beruniform', society: 'Kelab & Persatuan', sports: 'Sukan & Permainan'
-            }
+zh: { 
+        appTitle: '学校课外活动',
+        loginTitle: '学生登录<br><span class="text-base text-gray-500 font-normal mt-1 block">Log Masuk Pelajar</span>', 
+        loginSub: '请使用学校提供的 Google Delima 账号登录<br>Sila log masuk dengan akaun Google Delima sekolah',
+        googleLogin: '<div class="text-center leading-tight">使用 Delima 账号登录<br><span class="text-[10px] font-normal opacity-70">Log Masuk dengan Delima</span></div>',
+        studentProfile: '填写学生资料<br><span class="text-base text-gray-500 font-normal mt-1 block">Profil Pelajar</span>', 
+        studentProfileSub: '请填写您孩子的资料以进行选课<br>Sila isi maklumat anak anda untuk pemilihan',
+        studentName: '学生姓名 / Nama Pelajar', 
+        studentClass: '班级 / Kelas (e.g. 1A)',
+        loginBtn: '开始选课 / Mula Pemilihan',
+        step1Title: '制服团体<br><span class="text-[10px] text-gray-400 font-normal">Badan Beruniform</span>', 
+        step2Title: '学会<br><span class="text-[10px] text-gray-400 font-normal">Kelab & Persatuan</span>', 
+        step3Title: '运动与游戏<br><span class="text-[10px] text-gray-400 font-normal">Sukan & Permainan</span>', 
+        step4Title: '确认<br><span class="text-[10px] text-gray-400 font-normal">Pengesahan</span>',
+        step1Desc: '请选择一个制服团体 (必选) / Sila pilih satu badan beruniform (Wajib)', 
+        step2Desc: '请选择一个学会 (必选) / Sila pilih satu kelab atau persatuan (Wajib)', 
+        step3Desc: '请选择一个运动或游戏 (必选) / Sila pilih satu sukan atau permainan (Wajib)',
+        summaryTitle: '确认选择 / Pengesahan Pilihan', 
+        summaryDesc: '请检查您为孩子选择的课外活动。 / Sila semak pilihan kokurikulum untuk anak anda.',
+        summaryMsg: '请确认您的选择。提交后，系统将保存该记录。<br>Sila sahkan pilihan anda. Selepas dihantar, ia akan direkodkan.',
+        btnBack: '上一步 / Kembali', 
+        btnNext: '下一步 / Seterusnya', 
+        btnSubmit: '确认提交 / Hantar',
+        full: '已满 Penuh', 
+        slots: '名额 Kekosongan',
+        successTitle: '提交成功！<br>Berjaya Dihantar!', 
+        successDesc: '您的课外活动选择已记录在案。<br>Pilihan kokurikulum anda telah direkodkan.',
+        emailSent: '报名报告将发送至您的邮箱 / Laporan pendaftaran akan dihantar ke e-mel anda: ',
+        uniform: '制服团体 / Badan Beruniform', 
+        society: '学会 / Kelab & Persatuan', 
+        sports: '运动与游戏 / Sukan & Permainan'
+    }
         };
 
         const CLUBS_DATA = [
@@ -462,31 +458,15 @@
             }
         }
 
-        function toggleLanguage() {
-            STATE.lang = STATE.lang === 'zh' ? 'ms' : 'zh';
-            
-            if (STATE.lang === 'zh') {
-                DOM.langZh.className = "px-3 py-1 rounded-full text-sm font-medium transition-all duration-300 bg-white shadow-sm text-brand-700";
-                DOM.langMs.className = "px-3 py-1 rounded-full text-sm font-medium transition-all duration-300 text-gray-500";
-            } else {
-                DOM.langMs.className = "px-3 py-1 rounded-full text-sm font-medium transition-all duration-300 bg-white shadow-sm text-brand-700";
-                DOM.langZh.className = "px-3 py-1 rounded-full text-sm font-medium transition-all duration-300 text-gray-500";
-            }
-            
-            updateTranslations();
-            renderCurrentStep();
-        }
-
         function updateTranslations() {
-            const strings = I18N[STATE.lang];
-            document.querySelectorAll('[data-i18n]').forEach(el => {
-                const key = el.getAttribute('data-i18n');
-                if (strings[key]) el.textContent = strings[key];
-            });
-            // Update inputs placeholders
-            document.getElementById('input-student-name').placeholder = STATE.lang === 'zh' ? "例如: 阿里" : "Cth: Ali bin Abu";
-            document.getElementById('input-student-class').placeholder = STATE.lang === 'zh' ? "例如: 1A" : "Cth: 1A";
-        }
+    const strings = I18N['zh']; // 强制只读取上面设置好的混合双语
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (strings[key]) el.innerHTML = strings[key]; // 这里从 textContent 改成 innerHTML
+    });
+    document.getElementById('input-student-name').placeholder = "例如 / Cth: Ali bin Abu";
+    document.getElementById('input-student-class').placeholder = "例如 / Cth: 1A";
+}
 
         function handleStudentSubmit(e) {
             e.preventDefault();
