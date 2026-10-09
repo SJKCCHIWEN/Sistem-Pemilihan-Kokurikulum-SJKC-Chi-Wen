@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>课外活动报名 - 数据导出后台</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen p-8">
+
+    <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-md p-8">
+        <div class="flex items-center justify-between mb-8 border-b pb-4">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-800"><i class="fa-solid fa-database text-blue-600 mr-2"></i> 数据导出后台</h1>
+                <p class="text-gray-500 mt-1">一键将 Firebase 里的学生报名数据导出为 Excel (CSV) 格式。</p>
+            </div>
+            <button id="btn-export" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-xl shadow-sm transition-all flex items-center gap-2">
+                <i class="fa-solid fa-file-csv"></i> <span>下载 Excel (CSV) 报告</span>
+            </button>
+        </div>
+
+        <div id="status-box" class="bg-blue-50 text-blue-800 p-4 rounded-xl border border-blue-100 hidden">
+            <i class="fa-solid fa-spinner fa-spin mr-2"></i> 正在从数据库获取资料，请稍候...
+        </div>
+        
+        <div id="success-box" class="bg-green-50 text-green-800 p-4 rounded-xl border border-green-100 hidden">
+            <i class="fa-solid fa-check-circle mr-2"></i> 导出成功！文件已开始下载。
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // ==========================================
+        // ⚠️ 第 1 步：请把这里的 firebaseConfig 替换成您的真实 Config！
+        // （跟 index.html 里的一模一样）
+        // ==========================================
+        const firebaseConfig = {
+  apiKey: "AIzaSyC5Y0v7QfeFUHvPffNqrulq046j3eQi1R8",
+  authDomain: "sistem-pemilihan-kokurikulum.firebaseapp.com",
+  projectId: "sistem-pemilihan-kokurikulum",
+  storageBucket: "sistem-pemilihan-kokurikulum.firebasestorage.app",
+  messagingSenderId: "366107610148",
+  appId: "1:366107610148:web:b1cc4ed93b94b355865cb1",
+  measurementId: "G-14TF5JSHB2"
+};
+        // ==========================================
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // 社团代号转换表 (方便导出时显示中文名字，而不是 u1, s1)
+        const clubNames = {
+            'u1': '童军', 'u2': '红新月会', 'u3': '少年警察', 'u4': '圣约翰救伤队',
+            's1': '科学与数学学会', 's2': '电脑学会', 's3': '美术学会', 's4': '华文学会',
+            'sp1': '篮球学会', 'sp2': '羽毛球学会', 'sp3': '足球学会', 'sp4': '田径学会'
+        };
+
+        const btnExport = document.getElementById('btn-export');
+        const statusBox = document.getElementById('status-box');
+        const successBox = document.getElementById('success-box');
+
+        btnExport.addEventListener('click', async () => {
+            try {
+                btnExport.disabled = true;
+                statusBox.classList.remove('hidden');
+                successBox.classList.add('hidden');
+
+                // 1. 从 Firestore 获取所有资料
+                const querySnapshot = await getDocs(collection(db, "club_registrations"));
+                
+                // 2. 准备 CSV 的表头 (Header)
+                // 加上 \uFEFF 是为了防止 Excel 打开中文时变乱码 (UTF-8 BOM)
+                let csvContent = "\uFEFF提交时间,家长电邮,学生姓名,班级,制服团体,学会,运动与游戏\n";
+
+                // 3. 把每一行数据写入 CSV
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    
+                    const timestamp = data.timestamp ? new Date(data.timestamp).toLocaleString() : '未知时间';
+                    const email = data.parentEmail || '';
+                    const name = data.studentInfo?.name || '';
+                    const cls = data.studentInfo?.cls || '';
+                    
+                    // 将社团 ID 转换为中文名字
+                    const uniform = clubNames[data.selections?.step1] || data.selections?.step1 || '';
+                    const society = clubNames[data.selections?.step2] || data.selections?.step2 || '';
+                    const sports = clubNames[data.selections?.step3] || data.selections?.step3 || '';
+
+                    // 把字段用双引号包起来，防止内容里有逗号导致格式错乱
+                    const row = `"${timestamp}","${email}","${name}","${cls}","${uniform}","${society}","${sports}"`;
+                    csvContent += row + "\n";
+                });
+
+                // 4. 触发下载
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement("a");
+                link.setAttribute("href", url);
+                link.setAttribute("download", "课外活动报名总表.csv");
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                statusBox.classList.add('hidden');
+                successBox.classList.remove('hidden');
+                btnExport.disabled = false;
+
+            } catch (error) {
+                console.error("导出失败: ", error);
+                alert("导出失败，请检查网络或资料库连接。\n错误信息：" + error.message);
+                statusBox.classList.add('hidden');
+                btnExport.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
