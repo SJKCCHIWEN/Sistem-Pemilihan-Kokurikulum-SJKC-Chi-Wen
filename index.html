@@ -6,7 +6,6 @@
     <title>学校课外活动 / Pemilihan Kokurikulum</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
     
@@ -166,8 +165,15 @@
                 
                 <div id="success-container" class="hidden flex-grow flex-col items-center justify-center py-10 text-center fade-in">
                     <div class="w-20 h-20 bg-green-100 text-green-500 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl shadow-sm">
-                        <i class="fa-solid fa-check"></i>
-                    </div>
+                    <i class="fa-solid fa-check"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-900 mb-2" data-i18n="successTitle">提交成功！</h2>
+                <p class="text-gray-500 mb-6" data-i18n="successDesc">您的课外活动选择已成功保存。</p>
+
+                <div class="bg-gray-50 rounded-xl p-6 w-full max-w-sm border border-gray-100 text-left mb-6" id="success-details">
+                </div>
+            </div>
+        </div>
                     <h2 class="text-2xl font-bold text-gray-900 mb-2" data-i18n="successTitle">提交成功！</h2>
                     <p class="text-gray-500 mb-6" data-i18n="successDesc">您的课外活动选择已成功保存。</p>
                     
@@ -244,9 +250,8 @@
                 slots: '名额 Kekosongan',
                 successTitle: '提交成功！<br>Berjaya Dihantar!', 
                 successDesc: '您的课外活动选择已记录在案。<br>Pilihan kokurikulum anda telah direkodkan.',
-                emailSent: '报名报告将发送至您的邮箱 / Laporan pendaftaran akan dihantar ke e-mel anda: ',
-                uniform: '制服团体 / Badan Beruniform', 
-                society: '学会 / Kelab & Persatuan', 
+            uniform: '制服团体 / Badan Beruniform', 
+            society: '学会 / Kelab & Persatuan', 
                 sports: '运动与游戏 / Sukan & Permainan'
             }
         };
@@ -291,11 +296,10 @@
             wizardDesc: document.getElementById('wizard-step-desc'),
             clubsGrid: document.getElementById('clubs-grid'),
             summaryContainer: document.getElementById('summary-container'),
-            summaryList: document.getElementById('summary-list'),
-            successContainer: document.getElementById('success-container'),
-            successEmail: document.getElementById('success-email'),
-            wizardNav: document.getElementById('wizard-nav'),
-            btnPrev: document.getElementById('btn-prev'),
+        summaryList: document.getElementById('summary-list'),
+        successContainer: document.getElementById('success-container'),
+        wizardNav: document.getElementById('wizard-nav'),
+        btnPrev: document.getElementById('btn-prev'),
             btnNext: document.getElementById('btn-next'),
             btnNextText: document.getElementById('btn-next-text')
         };
@@ -602,12 +606,11 @@
         }
         
         function renderSuccess() {
-             const t = I18N['zh'];
-             const details = document.getElementById('success-details');
-             DOM.successEmail.textContent = STATE.parentEmail || 'your-email@example.com';
-             
-             details.innerHTML = `
-                <div class="flex justify-between py-2 border-b border-gray-200">
+         const t = I18N['zh'];
+         const details = document.getElementById('success-details');
+         
+         details.innerHTML = `
+            <div class="flex justify-between py-2 border-b border-gray-200">
                     <span class="text-gray-500">${t.studentName}</span>
                     <span class="font-medium text-gray-900">${STATE.studentInfo.name}</span>
                 </div>
@@ -640,37 +643,15 @@
                             studentInfo: STATE.studentInfo,
                             parentEmail: STATE.parentEmail,
                             selections: STATE.selections,
-                            submitted: true,
-                            timestamp: new Date().toISOString()
-                        });
-                    }
+                        submitted: true,
+                        timestamp: new Date().toISOString()
+                    });
                 }
+            }
 
-                // ⚠️ 特别注意：请记得在这里填入您的 EmailJS ID！
-                const EMAILJS_SERVICE_ID = 'YOUR_SERVICE_ID';   
-                const EMAILJS_TEMPLATE_ID = 'YOUR_TEMPLATE_ID'; 
-                const EMAILJS_PUBLIC_KEY = 'YOUR_PUBLIC_KEY';   
-                
-                if (EMAILJS_PUBLIC_KEY !== 'YOUR_PUBLIC_KEY') {
-                    emailjs.init(EMAILJS_PUBLIC_KEY);
-                    const club1 = CLUBS_DATA.find(c => c.id === STATE.selections.step1);
-                    const club2 = CLUBS_DATA.find(c => c.id === STATE.selections.step2);
-                    const club3 = CLUBS_DATA.find(c => c.id === STATE.selections.step3);
-                    
-                    const templateParams = {
-                        to_email: STATE.parentEmail,
-                        student_name: STATE.studentInfo.name,
-                        student_class: STATE.studentInfo.cls,
-                        uniform_club: club1 ? club1.name_zh : '',
-                        society_club: club2 ? club2.name_zh : '',
-                        sports_club: club3 ? club3.name_zh : ''
-                    };
-                    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams);
-                }
-
-                showStep(5); 
-            } catch (err) {
-                console.error(err);
+            showStep(5); 
+        } catch (err) {
+            console.error(err);
                 alert("Error saving data. Please try again.");
                 DOM.btnNext.innerHTML = `<span id="btn-next-text">确认提交 / Hantar</span> <i class="fa-solid fa-arrow-right"></i>`;
                 DOM.btnNext.disabled = false;
