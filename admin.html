@@ -19,7 +19,7 @@
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: { sans: ['Inter', '"楷体"', '"KaiTi"', 'sans-serif'] }
+                    fontFamily: { sans: ['Inter', '"楷体"', '"KaiTi"', '"STKaiti"', 'sans-serif'] }
                 }
             }
         }
@@ -33,6 +33,15 @@
     </style>
 </head>
 <body class="text-slate-800 antialiased h-screen flex flex-col overflow-hidden">
+
+    <!-- 全局提示框 (Toast Notification) 替代 alert() -->
+    <div id="toast-notification" class="fixed top-4 right-4 transform translate-x-full transition-transform duration-300 z-[100] flex items-center bg-white border-l-4 rounded-lg shadow-lg p-4 max-w-sm hidden">
+        <div id="toast-icon" class="text-xl mr-3"></div>
+        <div>
+            <p id="toast-message" class="text-sm font-bold text-slate-800"></p>
+            <p id="toast-message-ms" class="text-xs text-slate-500 mt-0.5"></p>
+        </div>
+    </div>
 
     <!-- 顶部导航栏 -->
     <header class="bg-white border-b border-slate-200 shadow-sm z-10 flex-shrink-0">
@@ -145,7 +154,7 @@
         </div>
     </main>
 
-    <!-- 删除确认弹窗 -->
+    <!-- 删除确认弹窗 (双语) -->
     <div id="delete-modal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-xl max-w-sm w-full p-6 text-center transform scale-100 transition-all">
             <div class="w-16 h-16 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
@@ -167,7 +176,7 @@
         </div>
     </div>
 
-    <!-- 名额设定弹窗 -->
+    <!-- 名额设定弹窗 (双语) -->
     <div id="settings-modal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex flex-col items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-xl max-w-4xl w-full flex flex-col max-h-[90vh]">
             <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50 rounded-t-2xl">
@@ -192,7 +201,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getFirestore, collection, onSnapshot, doc, deleteDoc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // 1. Firebase 配置 (Do not change)
+        // Firebase 配置 (Do not change)
         const firebaseConfig = {
           apiKey: "AIzaSyC5Y0v7QfeFUHvPffNqrulq046j3eQi1R8",
           authDomain: "sistem-pemilihan-kokurikulum.firebaseapp.com",
@@ -204,7 +213,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // 2. 绑定 DOM 元素
+        // 绑定 DOM 元素
         const btnExport = document.getElementById('btn-export');
         const btnSettings = document.getElementById('btn-settings');
         const modalSettings = document.getElementById('settings-modal');
@@ -220,7 +229,42 @@
         const btnCancelDelete = document.getElementById('btn-cancel-delete');
         const btnConfirmDelete = document.getElementById('btn-confirm-delete');
 
-        // 3. 社团双语代号映射表
+        // Toast UI 通知系统 (取代违规的 alert 弹窗)
+        const toastEl = document.getElementById('toast-notification');
+        const toastMsg = document.getElementById('toast-message');
+        const toastMsgMs = document.getElementById('toast-message-ms');
+        const toastIcon = document.getElementById('toast-icon');
+        let toastTimeout;
+
+        function showToast(messageZh, messageMs, type = 'info') {
+            clearTimeout(toastTimeout);
+            toastMsg.innerText = messageZh;
+            toastMsgMs.innerText = messageMs;
+            
+            toastEl.className = `fixed top-4 right-4 transform transition-transform duration-300 z-[100] flex items-center bg-white border-l-4 rounded-lg shadow-lg p-4 max-w-sm`;
+            
+            if (type === 'error') {
+                toastEl.classList.add('border-red-500');
+                toastIcon.innerHTML = `<i class="fa-solid fa-circle-exclamation text-red-500"></i>`;
+            } else if (type === 'success') {
+                toastEl.classList.add('border-green-500');
+                toastIcon.innerHTML = `<i class="fa-solid fa-circle-check text-green-500"></i>`;
+            } else {
+                toastEl.classList.add('border-blue-500');
+                toastIcon.innerHTML = `<i class="fa-solid fa-info-circle text-blue-500"></i>`;
+            }
+
+            toastEl.classList.remove('hidden');
+            void toastEl.offsetWidth; // Trigger reflow
+            toastEl.classList.remove('translate-x-full');
+
+            toastTimeout = setTimeout(() => {
+                toastEl.classList.add('translate-x-full');
+                setTimeout(() => toastEl.classList.add('hidden'), 300);
+            }, 3500);
+        }
+
+        // 社团双语代号映射表
         const clubNames = {
             'u1': '少年消拯队 Bomba Junior', 'u2': '红新月会 BSMM', 'u3': '童子军 Pengakap', 'u4': '伊斯兰童子军 PPIM', 'u5': '少年军旅 TKRS',
             's1': '华文学会 Bahasa Cina', 's2': '国文学会 Bahasa Melayu', 's3': '英文学会 Bahasa Inggeris', 's4': '小医生学会 Doktor Muda', 's5': '爪夷文学会 Jawi & Khat', 's6': '书法学会 Kaligrafi', 's7': '美化校园 Keceriaan', 's8': '创意艺术 Kakiseni', 's9': '辅导学会 Kerjaya', 's10': '资源回收 Kitar Semula', 's11': '阅读/咨询 Nilam/TVPSS', 's12': '防罪犯 Pencegah Jenayah', 's13': '机械学会 Robotik', 's14': '国家原则 Rukun Negara', 's15': '贷书学会 SPBT', 's16': '科学技术 STEM',
@@ -236,7 +280,7 @@
         let allRecords = [];
         let deleteTargetId = null;
 
-        // 4. 从 Firebase 实时读取报名数据
+        // 从 Firebase 实时读取报名数据
         onSnapshot(collection(db, 'club_registrations'), (snapshot) => {
             allRecords = [];
             snapshot.forEach(doc => {
@@ -247,7 +291,7 @@
             renderTable(allRecords);
         });
 
-        // 5. 渲染表格数据
+        // 渲染表格数据
         function renderTable(data) {
             totalCountEl.innerText = data.length;
             tableBody.innerHTML = '';
@@ -263,7 +307,6 @@
                 const cls = record.studentInfo?.cls || '-';
                 const name = record.studentInfo?.name || '-';
                 
-                // 将代号自动翻译为双语名字
                 let uniform = record.selections?.step1 || '未选 / Tiada';
                 if(clubNames[uniform]) uniform = clubNames[uniform];
                 
@@ -324,18 +367,19 @@
             try {
                 await deleteDoc(doc(db, "club_registrations", deleteTargetId));
                 deleteModal.classList.add('hidden');
+                showToast("成功删除记录，名额已释放", "Rekod berjaya dipadam, kuota telah dilepaskan.", "success");
             } catch (error) {
-                alert("删除失败，请检查网络！ / Ralat memadam data!");
+                showToast("删除失败，请检查网络连接！", "Ralat memadam data, periksa sambungan internet.", "error");
             } finally {
                 btnConfirmDelete.innerHTML = originalText;
                 btnConfirmDelete.disabled = false;
             }
         });
 
-        // 6. 导出真正的 Excel 文件 (SheetJS)
+        // 导出真正的 Excel 文件 (SheetJS)
         btnExport.addEventListener('click', () => {
             if (allRecords.length === 0) {
-                alert("目前没有资料可导出！/ Tiada data untuk dieksport!");
+                showToast("目前没有任何数据可导出！", "Tiada data untuk dieksport setakat ini.", "error");
                 return;
             }
             
@@ -373,12 +417,13 @@
                 // 调整 Excel 列宽
                 ws['!cols'] = [{wch: 22}, {wch: 30}, {wch: 12}, {wch: 28}, {wch: 30}, {wch: 30}, {wch: 30}];
                 const wb = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(wb, ws, "课外活动名单");
+                XLSX.utils.book_append_sheet(wb, ws, "Senarai Pendaftaran");
                 
                 // 触发下载真正的 .xlsx 文件
-                XLSX.writeFile(wb, `SJKC_Chi_Wen_Kokurikulum_${new Date().toISOString().slice(0,10)}.xlsx`);
+                XLSX.writeFile(wb, `Senarai_Kokurikulum_SJKC_Chi_Wen_${new Date().toISOString().slice(0,10)}.xlsx`);
+                showToast("Excel 文件下载成功！", "Fail Excel berjaya dimuat turun.", "success");
             } catch (error) {
-                alert("导出时发生错误！ / Ralat semasa eksport!");
+                showToast("导出文件时发生错误！", "Ralat semasa mengeksport fail.", "error");
                 console.error(error);
             } finally {
                 btnExport.innerHTML = originalText;
@@ -386,7 +431,7 @@
             }
         });
 
-        // 7. 名额设定弹窗 (Live Capacity Settings)
+        // 名额设定弹窗 (Live Capacity Settings)
         btnSettings.addEventListener('click', async () => {
             modalSettings.classList.remove('hidden');
             settingsContainer.innerHTML = '<div class="text-center py-10"><i class="fa-solid fa-spinner fa-spin text-brand-500 text-2xl"></i> 读取中 / Memuatkan...</div>';
@@ -460,6 +505,7 @@
                 
                 btnSaveSettings.innerHTML = `<i class="fa-solid fa-check"></i> 保存成功 / Berjaya!`;
                 btnSaveSettings.classList.replace('bg-blue-600', 'bg-green-600');
+                showToast("设定已保存", "Tetapan telah berjaya disimpan.", "success");
                 
                 setTimeout(() => {
                     modalSettings.classList.add('hidden');
@@ -469,7 +515,7 @@
                 }, 1500);
             } catch (err) {
                 console.error(err);
-                alert("保存失败！/ Ralat menyimpan!");
+                showToast("保存设定失败，请重试！", "Gagal menyimpan tetapan, sila cuba lagi.", "error");
                 btnSaveSettings.innerHTML = originalHTML;
                 btnSaveSettings.disabled = false;
             }
