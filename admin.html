@@ -42,6 +42,10 @@
                     </div>
                 </div>
                 
+                <button id="btn-settings" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-5 rounded-xl shadow-sm transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-sliders"></i> <span class="hidden sm:inline">名额设定</span>
+                </button>
+
                 <button id="btn-export" class="bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-5 rounded-xl shadow-sm transition-all flex items-center gap-2">
                     <i class="fa-solid fa-file-csv"></i> <span class="hidden sm:inline">导出 Excel</span>
                 </button>
@@ -111,9 +115,36 @@
         </div>
     </div>
 
+    <!-- 🌟 新增：名额设定弹窗 -->
+    <div id="settings-modal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center fade-in p-4">
+        <div class="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[85vh] flex flex-col">
+            <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50/50 rounded-t-2xl">
+                <h3 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+                    <i class="fa-solid fa-sliders text-amber-500"></i> 社团名额 Live 设定
+                </h3>
+                <button id="btn-close-settings" class="text-slate-400 hover:text-slate-600 text-xl transition-colors"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <!-- 内容滚动区 -->
+            <div class="p-6 overflow-y-auto bg-slate-50/30 space-y-6" id="settings-container">
+                <div class="text-center text-slate-500 my-8">
+                    <i class="fa-solid fa-spinner fa-spin text-2xl mb-2 text-amber-500"></i>
+                    <p>正在读取目前设定的名额...</p>
+                </div>
+            </div>
+            
+            <div class="p-5 border-t border-slate-100 bg-white rounded-b-2xl flex justify-between items-center">
+                <p class="text-xs text-slate-400"><i class="fa-solid fa-circle-info"></i> 保存后，前端网页的名额限制会瞬间同步更新。</p>
+                <button id="btn-save-settings" class="py-2.5 px-6 bg-amber-500 hover:bg-amber-600 text-white rounded-xl font-bold transition-colors shadow-sm flex items-center gap-2">
+                    <i class="fa-solid fa-cloud-arrow-up"></i> 保存设定
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getFirestore, collection, onSnapshot, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, onSnapshot, doc, deleteDoc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // ==========================================
         // ⚠️ 第 1 步：请确保这里的 Config 和 index.html 一模一样
@@ -145,6 +176,13 @@
         // 全局变量
         let allRecords = [];
         let recordToDelete = null;
+
+        // 弹窗元素 (名额设定)
+        const modalSettings = document.getElementById('settings-modal');
+        const btnSettings = document.getElementById('btn-settings');
+        const btnCloseSettings = document.getElementById('btn-close-settings');
+        const btnSaveSettings = document.getElementById('btn-save-settings');
+        const settingsContainer = document.getElementById('settings-container');
 
         // DOM 元素
         const tbody = document.getElementById('table-body');
@@ -313,6 +351,99 @@
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
+        });
+
+        // ==========================================
+        // 核心功能 6：名额设定弹窗 (Live Capacity Settings)
+        // ==========================================
+        
+        // 组织一下分类，方便显示
+        const clubCategories = {
+            '制服团体': ['u1','u2','u3','u4','u5'],
+            '学会': ['s1','s2','s3','s4','s5','s6','s7','s8','s9','s10','s11','s12','s13','s14','s15','s16'],
+            '运动与游戏': ['sp1','sp2','sp3','sp4','sp5','sp6','sp7','sp8','sp9','sp10','sp11','sp12','sp13','sp14']
+        };
+
+        btnSettings.addEventListener('click', async () => {
+            modalSettings.classList.remove('hidden');
+            
+            try {
+                // 从 Firebase 读取最新的 capacity 设定 (如果没有，默认是40)
+                const capDoc = await getDoc(doc(db, 'club_settings', 'capacities'));
+                const customCapacities = capDoc.exists() ? capDoc.data() : {};
+
+                let html = '';
+                for (const [categoryName, ids] of Object.entries(clubCategories)) {
+                    html += `<h4 class="font-bold text-slate-800 text-sm uppercase tracking-widest border-b border-slate-200 pb-2 mb-3 mt-4">${categoryName}</h4>`;
+                    html += `<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">`;
+                    
+                    ids.forEach(id => {
+                        const name = clubNames[id];
+                        const cap = customCapacities[id] !== undefined ? customCapacities[id] : 40; // 默认40
+                        
+                        // 顺便算一下目前已经报名的真实人数
+                        const currentEnrolled = allRecords.filter(r => 
+                            r.selections?.step1 === id || r.selections?.step2 === id || r.selections?.step3 === id
+                        ).length;
+
+                        const isFull = currentEnrolled >= cap;
+
+                        html += `
+                            <div class="flex items-center justify-between bg-white border ${isFull ? 'border-red-200 bg-red-50/30' : 'border-slate-200'} p-3 rounded-xl shadow-sm">
+                                <div class="flex flex-col">
+                                    <span class="text-sm font-bold text-slate-700">${name}</span>
+                                    <span class="text-[10px] ${isFull ? 'text-red-500 font-bold' : 'text-slate-400'}">已报名: ${currentEnrolled} 人</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <input type="number" min="0" data-id="${id}" value="${cap}" class="capacity-input w-16 text-center py-1.5 px-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none text-sm font-bold text-slate-700 transition-all">
+                                </div>
+                            </div>
+                        `;
+                    });
+                    html += `</div>`;
+                }
+                settingsContainer.innerHTML = html;
+            } catch (err) {
+                console.error(err);
+                settingsContainer.innerHTML = `<div class="text-center text-red-500 py-8"><i class="fa-solid fa-triangle-exclamation text-2xl mb-2"></i><p>读取失败，请检查网络</p></div>`;
+            }
+        });
+
+        btnCloseSettings.addEventListener('click', () => {
+            modalSettings.classList.add('hidden');
+        });
+
+        btnSaveSettings.addEventListener('click', async () => {
+            const inputs = document.querySelectorAll('.capacity-input');
+            const newCapacities = {};
+            
+            inputs.forEach(input => {
+                const id = input.getAttribute('data-id');
+                const val = parseInt(input.value) || 0;
+                newCapacities[id] = val;
+            });
+
+            const originalHTML = btnSaveSettings.innerHTML;
+            btnSaveSettings.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> 保存中...`;
+            btnSaveSettings.disabled = true;
+
+            try {
+                // 保存到 Firebase (不存在则自动创建)
+                await setDoc(doc(db, 'club_settings', 'capacities'), newCapacities, { merge: true });
+                btnSaveSettings.innerHTML = `<i class="fa-solid fa-check"></i> 保存成功!`;
+                
+                // 1.5秒后自动关闭
+                setTimeout(() => {
+                    modalSettings.classList.add('hidden');
+                    btnSaveSettings.innerHTML = originalHTML;
+                    btnSaveSettings.disabled = false;
+                }, 1500);
+            } catch (err) {
+                console.error(err);
+                alert("保存失败，请检查网络或权限。");
+                btnSaveSettings.innerHTML = originalHTML;
+                btnSaveSettings.disabled = false;
+            }
         });
 
     </script>
