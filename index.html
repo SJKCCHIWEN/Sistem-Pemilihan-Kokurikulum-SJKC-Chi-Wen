@@ -422,7 +422,19 @@
                         if (data.selections.step3) STATE.clubCounts[data.selections.step3]++;
                     }
                 });
-                console.log("人数统计完成！");
+
+                // 🌟 新增：动态读取后台 admin.html 设定的名额上限
+                const capDoc = await getDoc(doc(db, 'club_settings', 'capacities'));
+                if (capDoc.exists()) {
+                    const customCapacities = capDoc.data();
+                    CLUBS_DATA.forEach(c => {
+                        if (customCapacities[c.id] !== undefined) {
+                            c.capacity = parseInt(customCapacities[c.id]);
+                        }
+                    });
+                }
+
+                console.log("人数与名额统计完成！");
             } catch (e) {
                 console.error("同步人数失败:", e);
                 alert("读取最新名额失败，请检查网络。\nRalat menyemak kekosongan.");
