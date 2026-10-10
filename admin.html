@@ -3,140 +3,147 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SJKC Chi Wen - 课外活动后台仪表盘 (Live Dashboard)</title>
+    <title>SJKC Chi Wen - 课外活动后台仪表盘</title>
     
+    <!-- 引入 Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- 引入生成真正 Excel 的引擎 SheetJS -->
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+    
+    <!-- 引入图标与字体 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', '"楷体"', '"KaiTi"', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
     <style>
-        body { font-family: 'Inter', "楷体", "KaiTi", sans-serif; background-color: #f8fafc; }
-        /* 自定义滚动条 */
+        body { background-color: #f8fafc; }
         ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-        .fade-in { animation: fadeIn 0.3s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
-<body class="min-h-screen text-slate-800 p-4 sm:p-8">
+<body class="text-slate-800 antialiased h-screen flex flex-col overflow-hidden">
 
-    <!-- 顶部标题与数据卡片 -->
-    <div class="max-w-7xl mx-auto mb-8 fade-in">
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
-            <div>
-                <h1 class="text-3xl font-bold text-slate-900 flex items-center gap-3">
-                    <i class="fa-solid fa-chart-pie text-brand-600 text-teal-600"></i> 
-                    课外活动后台仪表盘
-                </h1>
-                <p class="text-slate-500 mt-2">Live Dashboard - 数据实时自动更新，无需刷新网页。</p>
+    <!-- 顶部导航栏 -->
+    <header class="bg-white border-b border-slate-200 shadow-sm z-10 flex-shrink-0">
+        <div class="px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <div class="w-10 h-10 bg-brand-600 rounded-xl flex items-center justify-center text-white font-bold shadow-sm">
+                    <img src="./logo.png" alt="Logo" class="w-full h-full object-contain" onerror="this.onerror=null; this.parentElement.innerHTML='<i class=\'fa-solid fa-school\'></i>';">
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold text-slate-900 leading-tight">课外活动后台管理系统</h1>
+                    <p class="text-xs text-slate-500 font-medium">Sistem Pengurusan Kokurikulum SJKC CHI WEN</p>
+                </div>
             </div>
             
-            <div class="flex gap-3">
-                <div class="bg-white px-6 py-3 rounded-xl shadow-sm border border-slate-200 flex items-center gap-4">
-                    <div class="p-2 bg-teal-50 text-teal-600 rounded-lg"><i class="fa-solid fa-users text-xl"></i></div>
-                    <div>
-                        <p class="text-xs text-slate-500 font-bold uppercase tracking-wider">总报名人数</p>
-                        <p class="text-2xl font-bold text-slate-900 leading-none mt-1" id="total-count">0</p>
-                    </div>
+            <div class="flex items-center gap-3">
+                <div class="bg-blue-50 text-blue-700 px-4 py-2 rounded-lg text-sm font-bold border border-blue-100 flex items-center gap-2">
+                    <i class="fa-solid fa-users"></i>
+                    总报名人数: <span id="total-count" class="text-lg">0</span>
                 </div>
-                
-                <button id="btn-settings" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-5 rounded-xl shadow-sm transition-all flex items-center gap-2">
-                    <i class="fa-solid fa-sliders"></i> <span class="hidden sm:inline">名额设定</span>
+                <!-- 名额设定按钮 -->
+                <button id="btn-settings" class="bg-amber-100 hover:bg-amber-200 text-amber-800 px-4 py-2 rounded-lg text-sm font-bold border border-amber-200 transition-colors flex items-center gap-2 shadow-sm">
+                    <i class="fa-solid fa-sliders"></i> 名额设定
                 </button>
-
-                <button id="btn-export" class="bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-5 rounded-xl shadow-sm transition-all flex items-center gap-2">
-                    <i class="fa-solid fa-file-csv"></i> <span class="hidden sm:inline">导出 Excel</span>
+                <!-- 导出 Excel 按钮 -->
+                <button id="btn-export" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-bold transition-colors flex items-center gap-2 shadow-sm">
+                    <i class="fa-solid fa-file-excel"></i> 导出 Excel
                 </button>
             </div>
         </div>
+    </header>
 
-        <!-- 搜索与表格区域 -->
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-            
-            <!-- 工具栏 -->
-            <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
-                <div class="relative w-full max-w-sm">
-                    <i class="fa-solid fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400"></i>
-                    <input type="text" id="search-input" class="w-full pl-11 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all text-sm outline-none" placeholder="搜索学生姓名或班级 (如: 1A)...">
-                </div>
-                <div class="text-sm text-slate-500 flex items-center gap-2 hidden sm:flex">
-                    <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div> Live Sync Active
-                </div>
+    <!-- 主体内容 -->
+    <main class="flex-1 flex flex-col overflow-hidden p-6 gap-4">
+        <!-- 搜索栏 -->
+        <div class="flex-shrink-0 bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex items-center gap-4">
+            <div class="relative flex-1 max-w-md">
+                <i class="fa-solid fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400"></i>
+                <input type="text" id="search-input" placeholder="输入学生姓名或班级搜索 (Cari Nama/Kelas)..." class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all text-sm font-medium">
             </div>
+        </div>
 
-            <!-- 数据表格 -->
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse whitespace-nowrap">
-                    <thead>
-                        <tr class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider font-bold border-b border-slate-200">
-                            <th class="p-4 pl-6">提交时间</th>
-                            <th class="p-4">班级</th>
-                            <th class="p-4">学生姓名</th>
-                            <th class="p-4">制服团体</th>
-                            <th class="p-4">学会</th>
-                            <th class="p-4">运动与游戏</th>
-                            <th class="p-4 pr-6 text-right">操作</th>
+        <!-- 数据表格区域 -->
+        <div class="flex-1 bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden flex flex-col relative">
+            <div class="overflow-x-auto flex-1 relative">
+                <table class="w-full text-left text-sm whitespace-nowrap">
+                    <thead class="bg-slate-50 text-slate-600 font-bold sticky top-0 z-10 shadow-sm">
+                        <tr>
+                            <th class="p-4 pl-6 border-b border-slate-200">提交时间</th>
+                            <th class="p-4 border-b border-slate-200">班级</th>
+                            <th class="p-4 border-b border-slate-200">学生姓名</th>
+                            <th class="p-4 border-b border-slate-200 text-red-700">制服团体</th>
+                            <th class="p-4 border-b border-slate-200 text-amber-700">学会</th>
+                            <th class="p-4 border-b border-slate-200 text-blue-700">运动与游戏</th>
+                            <th class="p-4 pr-6 border-b border-slate-200 text-right">操作</th>
                         </tr>
                     </thead>
-                    <tbody id="table-body" class="divide-y divide-slate-100 text-sm">
+                    <tbody id="table-body" class="divide-y divide-slate-100">
                         <!-- 数据将通过 JS 渲染在这里 -->
                     </tbody>
                 </table>
                 
-                <!-- 骨架屏 / 加载中 -->
-                <div id="loading-state" class="p-12 text-center text-slate-400">
-                    <i class="fa-solid fa-spinner fa-spin text-3xl mb-3 text-teal-500"></i>
-                    <p>正在与 Firebase 建立实时连接...</p>
+                <!-- 加载中状态 -->
+                <div id="loading-state" class="absolute inset-0 bg-white/80 flex flex-col items-center justify-center backdrop-blur-sm z-20">
+                    <i class="fa-solid fa-circle-notch fa-spin text-4xl text-blue-500 mb-4"></i>
+                    <p class="text-slate-500 font-medium">正在连接资料库并同步数据...</p>
                 </div>
 
-                <!-- 无数据提示 -->
-                <div id="empty-state" class="hidden p-12 text-center text-slate-400">
-                    <i class="fa-solid fa-folder-open text-4xl mb-3 text-slate-300"></i>
-                    <p>暂无报名记录或找不到匹配的结果</p>
+                <!-- 空数据状态 -->
+                <div id="empty-state" class="hidden absolute inset-0 bg-white flex flex-col items-center justify-center z-10">
+                    <div class="w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center text-slate-300 text-4xl mb-4">
+                        <i class="fa-solid fa-folder-open"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-700">目前没有任何记录</h3>
+                    <p class="text-slate-500 text-sm mt-1">当家长提交选课表后，资料会实时显示在这里。</p>
                 </div>
             </div>
         </div>
-    </div>
+    </main>
 
-    <!-- 自定义确认删除弹窗 (代替丑陋的 default confirm) -->
-    <div id="delete-modal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center fade-in p-4">
-        <div class="bg-white rounded-2xl shadow-xl max-w-sm w-full p-6 text-center">
-            <div class="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+    <!-- 删除确认弹窗 -->
+    <div id="delete-modal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-xl max-w-sm w-full p-6 text-center transform scale-100 transition-all">
+            <div class="w-16 h-16 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
                 <i class="fa-solid fa-triangle-exclamation"></i>
             </div>
-            <h3 class="text-xl font-bold text-slate-900 mb-2">确认删除此记录？</h3>
-            <p class="text-slate-500 text-sm mb-6" id="delete-modal-msg">删除后，该学生释放的社团名额将立即恢复给其他学生选择。此操作无法撤销。</p>
+            <h3 class="text-xl font-bold text-slate-900 mb-2">确定要删除此记录吗？</h3>
+            <p class="text-slate-500 text-sm mb-6">删除后，该学生的名额将被释放，且该学生可以重新登入选课。此操作无法撤销。</p>
             <div class="flex gap-3">
-                <button id="btn-cancel-delete" class="flex-1 py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold transition-colors">取消</button>
-                <button id="btn-confirm-delete" class="flex-1 py-2.5 px-4 bg-red-500 hover:bg-red-600 text-white rounded-xl font-bold transition-colors shadow-sm shadow-red-500/30">确认删除</button>
+                <button id="btn-cancel-delete" class="flex-1 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-colors">取消</button>
+                <button id="btn-confirm-delete" class="flex-1 px-4 py-2.5 bg-red-500 hover:bg-red-600 text-white font-bold rounded-xl transition-colors shadow-md shadow-red-500/20">确认删除</button>
             </div>
         </div>
     </div>
 
-    <!-- 🌟 新增：名额设定弹窗 -->
-    <div id="settings-modal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center fade-in p-4">
-        <div class="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[85vh] flex flex-col">
-            <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50/50 rounded-t-2xl">
-                <h3 class="text-xl font-bold text-slate-900 flex items-center gap-2">
-                    <i class="fa-solid fa-sliders text-amber-500"></i> 社团名额 Live 设定
-                </h3>
-                <button id="btn-close-settings" class="text-slate-400 hover:text-slate-600 text-xl transition-colors"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            
-            <!-- 内容滚动区 -->
-            <div class="p-6 overflow-y-auto bg-slate-50/30 space-y-6" id="settings-container">
-                <div class="text-center text-slate-500 my-8">
-                    <i class="fa-solid fa-spinner fa-spin text-2xl mb-2 text-amber-500"></i>
-                    <p>正在读取目前设定的名额...</p>
+    <!-- 名额设定弹窗 -->
+    <div id="settings-modal" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex flex-col items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-xl max-w-4xl w-full flex flex-col max-h-[90vh]">
+            <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50 rounded-t-2xl">
+                <div>
+                    <h3 class="text-lg font-bold text-slate-900">⚙️ 实时名额设定</h3>
+                    <p class="text-xs text-slate-500 mt-1">更改后，主页面的名额限制会立刻生效。默认上限为 40 人。</p>
                 </div>
+                <button id="btn-close-settings" class="text-slate-400 hover:text-slate-600 bg-white w-8 h-8 rounded-full border border-slate-200 shadow-sm"><i class="fa-solid fa-times"></i></button>
             </div>
-            
-            <div class="p-5 border-t border-slate-100 bg-white rounded-b-2xl flex justify-between items-center">
-                <p class="text-xs text-slate-400"><i class="fa-solid fa-circle-info"></i> 保存后，前端网页的名额限制会瞬间同步更新。</p>
-                <button id="btn-save-settings" class="py-2.5 px-6 bg-amber-500 hover:bg-amber-600 text-white rounded-xl font-bold transition-colors shadow-sm flex items-center gap-2">
-                    <i class="fa-solid fa-cloud-arrow-up"></i> 保存设定
+            <div class="p-6 overflow-y-auto flex-1 bg-slate-50/50" id="settings-container">
+                <!-- 动态生成设置表单 -->
+                <div class="text-center py-10"><i class="fa-solid fa-spinner fa-spin text-brand-500 text-2xl"></i> 读取中...</div>
+            </div>
+            <div class="px-6 py-4 border-t border-slate-200 bg-white rounded-b-2xl flex justify-end gap-3">
+                <button id="btn-save-settings" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-colors shadow-md shadow-blue-500/20">
+                    <i class="fa-solid fa-save mr-2"></i> 保存所有设定
                 </button>
             </div>
         </div>
@@ -146,9 +153,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getFirestore, collection, onSnapshot, doc, deleteDoc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // ==========================================
-        // ⚠️ 第 1 步：请确保这里的 Config 和 index.html 一模一样
-        // ==========================================
+        // 1. Firebase 配置
         const firebaseConfig = {
           apiKey: "AIzaSyC5Y0v7QfeFUHvPffNqrulq046j3eQi1R8",
           authDomain: "sistem-pemilihan-kokurikulum.firebaseapp.com",
@@ -157,245 +162,227 @@
           messagingSenderId: "366107610148",
           appId: "1:366107610148:web:b1cc4ed93b94b355865cb1"
         };
-        // ==========================================
-
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // 社团代号转换表 (与之前一致)
-        const clubNames = {
-            'u1': '少年消拯队', 'u2': '红新月会', 'u3': '童子军', 'u4': '伊斯兰童子军', 'u5': '少年军旅',
-            's1': '华文学会', 's2': '国文学会', 's3': '英文学会', 's4': '小医生学会', 's5': '爪夷文学会',
-            's6': '书法学会', 's7': '美化校园学会', 's8': '创意艺术学会', 's9': '辅导学会', 's10': '资源回收学会',
-            's11': '阅读/咨询学会', 's12': '防罪犯学会', 's13': '机械学会', 's14': '国家原则学会', 's15': '贷书学会', 's16': 'STEM',
-            'sp1': '游泳/越野赛跑', 'sp2': '羽球', 'sp3': '手球', 'sp4': '英式篮球', 'sp5': '篮球',
-            'sp6': '足球', 'sp7': '藤球', 'sp8': '排球', 'sp9': '象棋', 'sp10': '高尔夫球',
-            'sp11': '曲棍球', 'sp12': '跳绳', 'sp13': '田径', 'sp14': '乒乓'
-        };
-
-        // 全局变量
-        let allRecords = [];
-        let recordToDelete = null;
-
-        // 弹窗元素 (名额设定)
-        const modalSettings = document.getElementById('settings-modal');
+        // 2. 获取所有的 DOM 元素 (完美绑定，绝不报错)
+        const btnExport = document.getElementById('btn-export');
         const btnSettings = document.getElementById('btn-settings');
+        const modalSettings = document.getElementById('settings-modal');
+        const settingsContainer = document.getElementById('settings-container');
         const btnCloseSettings = document.getElementById('btn-close-settings');
         const btnSaveSettings = document.getElementById('btn-save-settings');
-        const settingsContainer = document.getElementById('settings-container');
-
-        // DOM 元素
-        const tbody = document.getElementById('table-body');
+        const searchInput = document.getElementById('search-input');
+        const tableBody = document.getElementById('table-body');
+        const totalCountEl = document.getElementById('total-count');
         const loadingState = document.getElementById('loading-state');
         const emptyState = document.getElementById('empty-state');
-        const countEl = document.getElementById('total-count');
-        const searchInput = document.getElementById('search-input');
-        const btnExport = document.getElementById('btn-export');
-        
-        // 弹窗元素
-        const modal = document.getElementById('delete-modal');
-        const modalMsg = document.getElementById('delete-modal-msg');
+        const deleteModal = document.getElementById('delete-modal');
         const btnCancelDelete = document.getElementById('btn-cancel-delete');
         const btnConfirmDelete = document.getElementById('btn-confirm-delete');
 
-        // ==========================================
-        // 核心功能 1：实时监听 Firebase 数据 (Live Sync)
-        // ==========================================
-        onSnapshot(collection(db, "club_registrations"), (snapshot) => {
-            allRecords = [];
-            snapshot.forEach((doc) => {
-                allRecords.push({ id: doc.id, ...doc.data() });
-            });
-            
-            // 按时间倒序排列 (最新的在最上面)
-            allRecords.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-            
-            loadingState.classList.add('hidden');
-            renderTable(allRecords);
-        }, (error) => {
-            console.error("数据同步失败:", error);
-            loadingState.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-red-500 text-3xl mb-3"></i><p class="text-red-600">连接失败，请检查网络设定或权限设定。</p>`;
-        });
+        // 3. 社团代号与名称映射表 (用于在表格和 Excel 中显示正确的中文名)
+        const clubNames = {
+            'u1': '少年消拯队 Bomba Junior', 'u2': '红新月会 BSMM', 'u3': '童子军 Pengakap', 'u4': '伊斯兰童子军 PPIM', 'u5': '少年军旅 TKRS',
+            's1': '华文学会', 's2': '国文学会', 's3': '英文学会', 's4': '小医生学会', 's5': '爪夷文学会', 's6': '书法学会', 's7': '美化校园学会', 's8': '创意艺术学会', 's9': '辅导学会', 's10': '资源回收学会', 's11': '阅读/咨询学会', 's12': '防罪犯学会', 's13': '机械学会', 's14': '国家原则学会', 's15': '贷书学会 SPBT', 's16': 'STEM',
+            'sp1': '游泳/越野赛跑', 'sp2': '羽球', 'sp3': '手球', 'sp4': '英式篮球', 'sp5': '篮球', 'sp6': '足球', 'sp7': '藤球', 'sp8': '排球', 'sp9': '象棋', 'sp10': '高尔夫球', 'sp11': '曲棍球', 'sp12': '跳绳', 'sp13': '田径 Olahraga', 'sp14': '乒乓'
+        };
 
-        // ==========================================
-        // 核心功能 2：渲染表格内容
-        // ==========================================
-        function renderTable(dataArray) {
-            tbody.innerHTML = '';
-            countEl.innerText = dataArray.length;
-
-            if (dataArray.length === 0) {
-                emptyState.classList.remove('hidden');
-                return;
-            } else {
-                emptyState.classList.add('hidden');
-            }
-
-            dataArray.forEach((data) => {
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-50 transition-colors group";
-                
-                // 格式化时间
-                const dateObj = new Date(data.timestamp);
-                const timeStr = isNaN(dateObj) ? '未知' : 
-                    `${dateObj.getFullYear()}-${String(dateObj.getMonth()+1).padStart(2,'0')}-${String(dateObj.getDate()).padStart(2,'0')} <span class="text-slate-400 text-xs ml-1">${String(dateObj.getHours()).padStart(2,'0')}:${String(dateObj.getMinutes()).padStart(2,'0')}</span>`;
-                
-                const name = data.studentInfo?.name || '-';
-                const cls = data.studentInfo?.cls || '-';
-                // 翻译社团名称 (CRITICAL FIX: Match the correct property from the database)
-                // The database stores IDs like 'u1' in selections.step1. We map these IDs back to names.
-                const uniform = clubNames[data.selections?.step1] || '<span class="text-red-400">未选</span>';
-                const society = clubNames[data.selections?.step2] || '<span class="text-red-400">未选</span>';
-                const sports = clubNames[data.selections?.step3] || '<span class="text-red-400">未选</span>';
-
-                tr.innerHTML = `
-                    <td class="p-4 pl-6">${timeStr}</td>
-                    <td class="p-4"><span class="bg-slate-100 text-slate-700 font-bold px-2 py-1 rounded text-xs">${cls}</span></td>
-                    <td class="p-4 font-bold text-slate-900">${name}</td>
-                    <td class="p-4"><span class="bg-red-50 text-red-700 px-2 py-1 rounded-md text-xs border border-red-100">${uniform}</span></td>
-                    <td class="p-4"><span class="bg-yellow-50 text-yellow-700 px-2 py-1 rounded-md text-xs border border-yellow-100">${society}</span></td>
-                    <td class="p-4"><span class="bg-blue-50 text-blue-700 px-2 py-1 rounded-md text-xs border border-blue-100">${sports}</span></td>
-                    <td class="p-4 pr-6 text-right">
-                        <button class="delete-btn opacity-20 group-hover:opacity-100 text-slate-400 hover:text-red-500 hover:bg-red-50 p-2 rounded-lg transition-all" data-id="${data.id}" data-name="${name}">
-                            <i class="fa-solid fa-trash-can"></i>
-                        </button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-
-            // 绑定删除按钮事件
-            document.querySelectorAll('.delete-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    recordToDelete = this.getAttribute('data-id');
-                    const studentName = this.getAttribute('data-name');
-                    modalMsg.innerHTML = `确定要永久删除学生 <strong>${studentName}</strong> 的报名记录吗？<br>删除后，该学生所占用的社团名额将立即释放。`;
-                    modal.classList.remove('hidden');
-                });
-            });
-        }
-
-        // ==========================================
-        // 核心功能 3：搜索功能
-        // ==========================================
-        searchInput.addEventListener('input', (e) => {
-            const searchTerm = e.target.value.toLowerCase();
-            const filtered = allRecords.filter(record => {
-                const name = (record.studentInfo?.name || '').toLowerCase();
-                const cls = (record.studentInfo?.cls || '').toLowerCase();
-                return name.includes(searchTerm) || cls.includes(searchTerm);
-            });
-            renderTable(filtered);
-        });
-
-        // ==========================================
-        // 核心功能 4：确认删除操作
-        // ==========================================
-        btnCancelDelete.addEventListener('click', () => {
-            modal.classList.add('hidden');
-            recordToDelete = null;
-        });
-
-        btnConfirmDelete.addEventListener('click', async () => {
-            if (!recordToDelete) return;
-            
-            const originalText = btnConfirmDelete.innerHTML;
-            btnConfirmDelete.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> 删除中`;
-            btnConfirmDelete.disabled = true;
-
-            try {
-                // 执行删除命令到 Firebase
-                await deleteDoc(doc(db, "club_registrations", recordToDelete));
-                // 删除成功后，Firebase 的 onSnapshot 会自动触发更新表格，无需手动重绘
-                modal.classList.add('hidden');
-            } catch (error) {
-                console.error("删除失败", error);
-                alert("删除失败，请检查网络权限。");
-            } finally {
-                btnConfirmDelete.innerHTML = originalText;
-                btnConfirmDelete.disabled = false;
-                recordToDelete = null;
-            }
-        });
-
-        // ==========================================
-        // 核心功能 5：导出 CSV (基于当前筛选结果)
-        // ==========================================
-        btnExport.addEventListener('click', () => {
-            if (allRecords.length === 0) return;
-            
-            let csvContent = "\uFEFF提交时间,家长电邮,学生姓名,班级,制服团体,学会,运动与游戏\n";
-            
-            // 使用当前显示的数据（允许导出搜索筛选后的数据）
-            const currentData = searchInput.value.trim() !== '' ? 
-                allRecords.filter(r => (r.studentInfo?.name||'').toLowerCase().includes(searchInput.value.toLowerCase()) || (r.studentInfo?.cls||'').toLowerCase().includes(searchInput.value.toLowerCase())) 
-                : allRecords;
-
-            currentData.forEach(data => {
-                const timestamp = data.timestamp ? new Date(data.timestamp).toLocaleString() : '未知';
-                const email = data.parentEmail || '';
-                const name = data.studentInfo?.name || '';
-                const cls = data.studentInfo?.cls || '';
-                const uniform = clubNames[data.selections?.step1] || '';
-                const society = clubNames[data.selections?.step2] || '';
-                const sports = clubNames[data.selections?.step3] || '';
-
-                csvContent += `"${timestamp}","${email}","${name}","${cls}","${uniform}","${society}","${sports}"\n`;
-            });
-
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement("a");
-            link.setAttribute("href", url);
-            link.setAttribute("download", `启文小学课外活动_${new Date().toISOString().slice(0,10)}.csv`);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        });
-
-        // ==========================================
-        // 核心功能 6：名额设定弹窗 (Live Capacity Settings)
-        // ==========================================
-        
-        // 组织一下分类，方便显示
         const clubCategories = {
             '制服团体': ['u1','u2','u3','u4','u5'],
             '学会': ['s1','s2','s3','s4','s5','s6','s7','s8','s9','s10','s11','s12','s13','s14','s15','s16'],
             '运动与游戏': ['sp1','sp2','sp3','sp4','sp5','sp6','sp7','sp8','sp9','sp10','sp11','sp12','sp13','sp14']
         };
 
+        let allRecords = [];
+        let deleteTargetId = null;
+
+        // 4. 从 Firebase 实时读取报名数据
+        onSnapshot(collection(db, 'club_registrations'), (snapshot) => {
+            allRecords = [];
+            snapshot.forEach(doc => {
+                allRecords.push({ id: doc.id, ...doc.data() });
+            });
+            // 按照时间最新排序
+            allRecords.sort((a, b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0));
+            loadingState.classList.add('hidden');
+            renderTable(allRecords);
+        });
+
+        // 5. 渲染表格数据
+        function renderTable(data) {
+            totalCountEl.innerText = data.length;
+            tableBody.innerHTML = '';
+            
+            if (data.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
+            }
+            emptyState.classList.add('hidden');
+
+            data.forEach(record => {
+                const time = record.timestamp ? new Date(record.timestamp).toLocaleString() : '-';
+                const cls = record.studentInfo?.cls || '-';
+                const name = record.studentInfo?.name || '-';
+                
+                // 将代号转换为文字，如果是旧数据存的是文字，就直接显示文字
+                let uniform = record.selections?.step1 || '未选';
+                if(clubNames[uniform]) uniform = clubNames[uniform];
+                
+                let society = record.selections?.step2 || '未选';
+                if(clubNames[society]) society = clubNames[society];
+                
+                let sports = record.selections?.step3 || '未选';
+                if(clubNames[sports]) sports = clubNames[sports];
+
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 transition-colors group";
+                tr.innerHTML = `
+                    <td class="p-4 pl-6 text-slate-500">${time}</td>
+                    <td class="p-4 font-bold text-slate-700"><span class="bg-slate-100 py-1 px-2.5 rounded-lg text-xs">${cls}</span></td>
+                    <td class="p-4 font-bold text-slate-900">${name}</td>
+                    <td class="p-4"><span class="bg-red-50 text-red-700 py-1 px-3 rounded-lg text-xs border border-red-100">${uniform}</span></td>
+                    <td class="p-4"><span class="bg-amber-50 text-amber-700 py-1 px-3 rounded-lg text-xs border border-amber-100">${society}</span></td>
+                    <td class="p-4"><span class="bg-blue-50 text-blue-700 py-1 px-3 rounded-lg text-xs border border-blue-100">${sports}</span></td>
+                    <td class="p-4 pr-6 text-right">
+                        <button class="btn-delete text-slate-300 hover:text-red-500 hover:bg-red-50 w-8 h-8 rounded-lg transition-all" data-id="${record.id}" title="删除记录">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </td>
+                `;
+                tableBody.appendChild(tr);
+            });
+
+            // 重新绑定删除按钮事件
+            document.querySelectorAll('.btn-delete').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    deleteTargetId = e.currentTarget.getAttribute('data-id');
+                    deleteModal.classList.remove('hidden');
+                });
+            });
+        }
+
+        // 搜索过滤功能
+        searchInput.addEventListener('input', (e) => {
+            const keyword = e.target.value.toLowerCase();
+            const filtered = allRecords.filter(r => 
+                (r.studentInfo?.name || '').toLowerCase().includes(keyword) || 
+                (r.studentInfo?.cls || '').toLowerCase().includes(keyword)
+            );
+            renderTable(filtered);
+        });
+
+        // 取消删除
+        btnCancelDelete.addEventListener('click', () => { 
+            deleteModal.classList.add('hidden'); 
+        });
+        
+        // 确认删除功能
+        btnConfirmDelete.addEventListener('click', async () => {
+            if (!deleteTargetId) return;
+            const originalText = btnConfirmDelete.innerHTML;
+            btnConfirmDelete.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> 删除中...`;
+            btnConfirmDelete.disabled = true;
+            try {
+                await deleteDoc(doc(db, "club_registrations", deleteTargetId));
+                deleteModal.classList.add('hidden');
+            } catch (error) {
+                alert("删除失败，请检查网络！");
+            } finally {
+                btnConfirmDelete.innerHTML = originalText;
+                btnConfirmDelete.disabled = false;
+            }
+        });
+
+        // 6. 导出高级 Excel (兼容 Google Sheets)
+        btnExport.addEventListener('click', () => {
+            if (allRecords.length === 0) {
+                alert("目前没有资料可导出！");
+                return;
+            }
+            
+            const originalText = btnExport.innerHTML;
+            btnExport.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> 处理中...`;
+            btnExport.disabled = true;
+
+            try {
+                const exportData = [["提交时间", "家长电邮", "班级", "学生姓名", "制服团体", "学会", "运动与游戏"]];
+                
+                // 判断是否在搜索，如果有搜寻，只导出搜寻到的名单
+                const currentData = searchInput.value.trim() !== '' ? 
+                    allRecords.filter(r => (r.studentInfo?.name||'').toLowerCase().includes(searchInput.value.toLowerCase()) || (r.studentInfo?.cls||'').toLowerCase().includes(searchInput.value.toLowerCase())) 
+                    : allRecords;
+
+                currentData.forEach(data => {
+                    const timestamp = data.timestamp ? new Date(data.timestamp).toLocaleString() : '未知';
+                    const email = data.parentEmail || '';
+                    const cls = data.studentInfo?.cls || '';
+                    const name = data.studentInfo?.name || '';
+                    
+                    let uniform = data.selections?.step1 || '未选';
+                    if(clubNames[uniform]) uniform = clubNames[uniform];
+                    
+                    let society = data.selections?.step2 || '未选';
+                    if(clubNames[society]) society = clubNames[society];
+                    
+                    let sports = data.selections?.step3 || '未选';
+                    if(clubNames[sports]) sports = clubNames[sports];
+
+                    exportData.push([timestamp, email, cls, name, uniform, society, sports]);
+                });
+
+                const ws = XLSX.utils.aoa_to_sheet(exportData);
+                // 调整 Excel 列宽
+                ws['!cols'] = [{wch: 22}, {wch: 30}, {wch: 10}, {wch: 25}, {wch: 25}, {wch: 25}, {wch: 25}];
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "课外活动名单");
+                
+                // 触发下载 xlsx 文件
+                XLSX.writeFile(wb, `启文小学课外活动名单_${new Date().toISOString().slice(0,10)}.xlsx`);
+            } catch (error) {
+                alert("导出时发生错误！");
+                console.error(error);
+            } finally {
+                btnExport.innerHTML = originalText;
+                btnExport.disabled = false;
+            }
+        });
+
+        // 7. 名额设定弹窗 (Live Capacity Settings)
         btnSettings.addEventListener('click', async () => {
             modalSettings.classList.remove('hidden');
+            settingsContainer.innerHTML = '<div class="text-center py-10"><i class="fa-solid fa-spinner fa-spin text-brand-500 text-2xl"></i> 读取中...</div>';
             
             try {
-                // 从 Firebase 读取最新的 capacity 设定 (如果没有，默认是40)
                 const capDoc = await getDoc(doc(db, 'club_settings', 'capacities'));
                 const customCapacities = capDoc.exists() ? capDoc.data() : {};
-
+                
                 let html = '';
                 for (const [categoryName, ids] of Object.entries(clubCategories)) {
-                    html += `<h4 class="font-bold text-slate-800 text-sm uppercase tracking-widest border-b border-slate-200 pb-2 mb-3 mt-4">${categoryName}</h4>`;
-                    html += `<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">`;
+                    html += `<h4 class="font-bold text-slate-800 text-sm uppercase tracking-widest border-b border-slate-200 pb-2 mb-4 mt-6 first:mt-0">${categoryName}</h4>`;
+                    html += `<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mb-6">`;
                     
                     ids.forEach(id => {
                         const name = clubNames[id];
-                        const cap = customCapacities[id] !== undefined ? customCapacities[id] : 40; // 默认40
+                        // 默认 40 人，如果有自定义设定则读取自定义
+                        const cap = customCapacities[id] !== undefined ? customCapacities[id] : 40;
                         
-                        // 顺便算一下目前已经报名的真实人数
+                        // 计算目前已报名人数
                         const currentEnrolled = allRecords.filter(r => 
                             r.selections?.step1 === id || r.selections?.step2 === id || r.selections?.step3 === id
                         ).length;
-
+                        
                         const isFull = currentEnrolled >= cap;
-
+                        
                         html += `
-                            <div class="flex items-center justify-between bg-white border ${isFull ? 'border-red-200 bg-red-50/30' : 'border-slate-200'} p-3 rounded-xl shadow-sm">
-                                <div class="flex flex-col">
-                                    <span class="text-sm font-bold text-slate-700">${name}</span>
-                                    <span class="text-[10px] ${isFull ? 'text-red-500 font-bold' : 'text-slate-400'}">已报名: ${currentEnrolled} 人</span>
+                            <div class="flex items-center justify-between bg-white border ${isFull ? 'border-red-300 bg-red-50/50' : 'border-slate-200'} p-3.5 rounded-xl shadow-sm">
+                                <div class="flex flex-col pr-2">
+                                    <span class="text-sm font-bold text-slate-700 leading-tight">${name.split(' ')[0]}</span>
+                                    <span class="text-[10px] mt-1 ${isFull ? 'text-red-600 font-bold' : 'text-slate-500'}">已报名: ${currentEnrolled} 人</span>
                                 </div>
-                                <div class="flex items-center gap-2">
-                                    <input type="number" min="0" data-id="${id}" value="${cap}" class="capacity-input w-16 text-center py-1.5 px-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none text-sm font-bold text-slate-700 transition-all">
+                                <div class="flex-shrink-0 flex items-center gap-1">
+                                    <span class="text-xs text-slate-400">上限:</span>
+                                    <input type="number" min="0" data-id="${id}" value="${cap}" class="capacity-input w-14 text-center py-1 px-1 bg-slate-50 border border-slate-300 rounded focus:ring-2 focus:ring-blue-500 outline-none text-sm font-bold">
                                 </div>
                             </div>
                         `;
@@ -405,47 +392,53 @@
                 settingsContainer.innerHTML = html;
             } catch (err) {
                 console.error(err);
-                settingsContainer.innerHTML = `<div class="text-center text-red-500 py-8"><i class="fa-solid fa-triangle-exclamation text-2xl mb-2"></i><p>读取失败，请检查网络</p></div>`;
+                settingsContainer.innerHTML = `<div class="text-center text-red-500 py-8 font-bold"><i class="fa-solid fa-triangle-exclamation"></i> 读取失败，请检查网络或权限设置</div>`;
             }
         });
 
-        btnCloseSettings.addEventListener('click', () => {
-            modalSettings.classList.add('hidden');
+        // 关闭设定弹窗
+        btnCloseSettings.addEventListener('click', () => { 
+            modalSettings.classList.add('hidden'); 
         });
 
+        // 保存设定到 Firebase
         btnSaveSettings.addEventListener('click', async () => {
             const inputs = document.querySelectorAll('.capacity-input');
             const newCapacities = {};
             
             inputs.forEach(input => {
                 const id = input.getAttribute('data-id');
-                const val = parseInt(input.value) || 0;
-                newCapacities[id] = val;
+                const val = parseInt(input.value);
+                // 只有有效数字才会被保存
+                if (!isNaN(val) && val >= 0) {
+                    newCapacities[id] = val;
+                }
             });
 
             const originalHTML = btnSaveSettings.innerHTML;
             btnSaveSettings.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> 保存中...`;
             btnSaveSettings.disabled = true;
-
+            
             try {
-                // 保存到 Firebase (不存在则自动创建)
+                // 写入 Firestore 数据库
                 await setDoc(doc(db, 'club_settings', 'capacities'), newCapacities, { merge: true });
-                btnSaveSettings.innerHTML = `<i class="fa-solid fa-check"></i> 保存成功!`;
                 
-                // 1.5秒后自动关闭
+                btnSaveSettings.innerHTML = `<i class="fa-solid fa-check"></i> 保存成功!`;
+                btnSaveSettings.classList.replace('bg-blue-600', 'bg-green-600');
+                
                 setTimeout(() => {
                     modalSettings.classList.add('hidden');
                     btnSaveSettings.innerHTML = originalHTML;
+                    btnSaveSettings.classList.replace('bg-green-600', 'bg-blue-600');
                     btnSaveSettings.disabled = false;
                 }, 1500);
             } catch (err) {
                 console.error(err);
-                alert("保存失败，请检查网络或权限。");
+                alert("保存失败，请检查网络！");
                 btnSaveSettings.innerHTML = originalHTML;
                 btnSaveSettings.disabled = false;
             }
         });
-
     </script>
 </body>
 </html>
