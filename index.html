@@ -114,7 +114,15 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1" id="label-student-class"></label>
-                    <input type="text" id="input-student-class" required class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors bg-gray-50 focus:bg-white" placeholder="例如 / Cth: 4A">
+                    <!-- 将输入框改为下拉选单 -->
+                    <select id="input-student-class" required class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-colors bg-gray-50 focus:bg-white font-sans text-gray-800 cursor-pointer shadow-sm">
+                        <option value="" disabled selected>请选择班级 / Sila Pilih Kelas...</option>
+                        <option value="3 QI">三启 (3 QI)</option>
+                        <option value="3 QIN">三亲 (3 QIN)</option>
+                        <option value="3 AI">三爱 (3 AI)</option>
+                        <option value="3 JING">三精 (3 JING)</option>
+                        <option value="3 CHENG">三诚 (3 CHENG)</option>
+                    </select>
                 </div>
                 <button type="submit" class="w-full py-3.5 px-4 bg-brand-600 hover:bg-brand-700 text-white rounded-xl font-bold shadow-md shadow-brand-500/30 transition-all flex items-center justify-center gap-2 mt-6">
                     <span id="label-login-btn"></span>
